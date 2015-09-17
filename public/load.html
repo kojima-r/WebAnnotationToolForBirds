@@ -1,0 +1,491 @@
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Web annotation tool</title>
+<script src="label.js"></script>
+<script src="audio.js"></script>
+<script src="audio_play.js"></script>
+<script src="graph.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+<script>
+function getRequest(){
+	if(location.search.length > 1) {
+		var get = new Object();
+		var ret = location.search.substr(1).split('&');
+		for(var i = 0; i < ret.length; i++) {
+			var r = ret[i].split('=');
+			get[r[0]] = r[1];
+		}
+		return get;
+	}else{
+		return false;
+	}
+}
+
+function zoomIn(){
+	var canvas = se.getElementById("thumbnailDisplay");
+	canvas.width*=1.5;
+	var canvas = document.getElementById("waveDisplayL");
+	canvas.width*=1.5;
+	var canvas = document.getElementById("waveDisplayL2");
+	canvas.width*=1.5;
+	var canvas = document.getElementById("waveDisplay");
+	canvas.width*=1.5;
+	var canvas = document.getElementById("waveDisplay2");
+	canvas.width*=1.5;
+	var w,h;
+	w=$('#viewLabel').css("width");
+	$('#viewLabel').css("width",w*1.5);
+	h=$('#viewLabel').css("height");
+	$('#viewLabel').css("height",h*1.5);
+	
+	w=$('#viewport').css("width");
+	$('#viewport').css("width",w*1.5);
+	h=$('#viewport').css("height");
+	$('#viewport').css("height",h*1.5);
+	
+	normalizeLinePositionW(1.5);
+	CANVAS_WIDTH=canvas.width;
+	updateLabelCanvas();
+	startLoadBinary();
+	thumbnailLoad();
+}
+function zoomOut(){
+	var canvas = document.getElementById("thumbnailDisplay");
+	canvas.width*=2/3;
+	var canvas = document.getElementById("waveDisplayL");
+	canvas.width*=2/3;
+	var canvas = document.getElementById("waveDisplayL2");
+	canvas.width*=2/3;
+	var canvas = document.getElementById("waveDisplay");
+	canvas.width*=2/3;
+	var canvas = document.getElementById("waveDisplay2");
+	canvas.width*=2/3;
+	var w,h;
+	w=$('#viewLabel').css("width");
+	$('#viewLabel').css("width",w*2/3);
+	h=$('#viewLabel').css("height");
+	$('#viewLabel').css("height",h*2/3);
+	
+	w=$('#viewport').css("width");
+	$('#viewport').css("width",w*2/3);
+	h=$('#viewport').css("height");
+	$('#viewport').css("height",h*2/3);
+	
+	normalizeLinePositionW(2/3);
+	CANVAS_WIDTH=canvas.width;
+	updateLabelCanvas();
+	startLoadBinary();
+	thumbnailLoad();
+}
+var projectName;
+window.onload=function(){
+	setInfoTagID("wavInfoArea");
+	//var canvas = document.getElementById("thumbnailDisplay");
+	//canvas.width = CANVAS_WIDTH;
+	//canvas.height = thumbnailCanvasHeight;
+	var canvas = document.getElementById("waveDisplay");
+	canvas.width = CANVAS_WIDTH;
+	canvas.height = CANVAS_HEIGHT;
+	var canvas = document.getElementById("waveDisplay2");
+	canvas.width = CANVAS_WIDTH;
+	canvas.height = CANVAS_HEIGHT;
+	canvas = document.getElementById("waveDisplayL");
+	canvas.width = CANVAS_WIDTH;
+	canvas.height = CANVAS_HEIGHT;
+	canvas = document.getElementById("waveDisplayL2");
+	canvas.width = CANVAS_WIDTH;
+	canvas.height = CANVAS_HEIGHT;
+	$('#viewLabel').css("width",CANVAS_WIDTH);
+	$('#viewLabel').css("height",CANVAS_HEIGHT);
+	$('#viewport').css("width",CANVAS_WIDTH);
+	$('#viewport').css("height",CANVAS_HEIGHT);
+	$('#contents').css("width",CANVAS_WIDTH);
+	$('#contents').css("padding-top",30);
+	SCALE_WIDTH=50
+	canvas = document.getElementById("scale1");
+	canvas.width = SCALE_WIDTH;
+	canvas.height = CANVAS_HEIGHT;
+	$('#viewUpper').css("width",CANVAS_WIDTH+SCALE_WIDTH);
+	$('#viewUpper').css("height",CANVAS_HEIGHT);
+	canvas = document.getElementById("scale2");
+	canvas.width = SCALE_WIDTH;
+	canvas.height = CANVAS_HEIGHT;
+	$('#viewLower').css("width",CANVAS_WIDTH+SCALE_WIDTH);
+	$('#viewLower').css("height",CANVAS_HEIGHT);
+	//
+	var get = getRequest();
+	projectName = get['project'];
+	if(!projectName){
+		projectName="sample"
+	}
+	labelName = get['label'];
+	if(!labelName){
+		labelName="label"
+	}
+	//
+	canvas_wav = document.getElementById("waveDisplay");
+	if ( ! canvas_wav || ! canvas_wav.getContext ) { return false; }
+	var ctx = canvas_wav.getContext('2d');
+	var img = new Image();
+	img.src = "../"+projectName+"/specgram.png";
+	//スペクトログラム縦軸表示
+	h_space=40
+	var freq = [] , max = 9;
+	for( var i=1; freq.push((max-i++)*1000) < max;);
+	img.onload = function() {
+		ctx.drawImage(img, 0, h_space,CANVAS_WIDTH,CANVAS_HEIGHT-h_space);
+	}
+	ctx_scale2 = document.getElementById("scale2").getContext('2d');
+	
+	hstep=(CANVAS_HEIGHT-h_space)/(freq.length-1)
+	for(var i=0;i<freq.length;i++){
+		ctx_scale2.fillText(freq[i],10,h_space+hstep*i);
+		ctx_scale2.SCALE_WIDTH
+		ctx_scale2.strokeStyle = '#000';
+		ctx_scale2.lineWidth = 1;
+		ctx_scale2.beginPath();
+		ctx_scale2.moveTo(SCALE_WIDTH-10,h_space+hstep*i);
+		ctx_scale2.lineTo(SCALE_WIDTH,h_space+hstep*i);
+		ctx_scale2.stroke()
+	}
+	//方向縦軸表示
+	h_space=40
+	var dirs = [-180,-135,-90,-45,0,45,90,135,180]
+	ctx_scale1 = document.getElementById("scale1").getContext('2d');
+	hstep=(CANVAS_HEIGHT)/(dirs.length-1)
+	hstep_text=(CANVAS_HEIGHT-10)/(dirs.length-1)
+	ctx_scale1.strokeStyle = '#000';
+	ctx_scale1.lineWidth = 1;
+	for(var i=0;i<dirs.length;i++){
+		ctx_scale1.fillText(dirs[i],15,CANVAS_HEIGHT-hstep_text*i);
+		ctx_scale1.beginPath();
+		ctx_scale1.moveTo(SCALE_WIDTH-10,hstep*i);
+		ctx_scale1.lineTo(SCALE_WIDTH,hstep*i);
+		ctx_scale1.stroke()
+	}
+	ctx_scale1.beginPath();
+	ctx_scale1.moveTo(SCALE_WIDTH,0);
+	ctx_scale1.lineTo(SCALE_WIDTH,CANVAS_HEIGHT);
+	ctx_scale1.stroke()
+	//
+	callbackAudioInfoLoaded=function(){
+		loadLabelDataServer("../"+projectName+"/"+labelName+".csv")
+	}
+	labelSelectedCallback=function(i){
+		arr=findPoint(i);
+		console.log(arr);
+		if(arr.length>0){
+			sep=arr[0][4];
+			filename="../"+projectName+"/sep_files/sep_"+sep+".wav";
+			console.log("../"+projectName+"/sep_files/sep_"+sep+".wav");
+			playSoundFile("../"+projectName+"/sep_files/sep_"+sep+".wav");
+			
+			
+			$("#evtInfoArea").html(
+				"file name : "+filename+"<br>"
+				);
+		}
+		
+	}
+	audioInitialize("../"+projectName+"/original.wav");
+}
+var shiftDownFlag;
+var ctrlDownFlag;
+$(document).ready(function(){
+	$(window).keydown(function(e){
+		if(e.keyCode==16){//shift
+			shiftDownFlag=true;
+		}else if(e.keyCode==187){//+
+			if(shiftDownFlag){
+				zoomIn();
+			}
+		}else if(e.keyCode==189){//-
+			if(shiftDownFlag){
+				zoomOut();
+			}
+		}else if(e.keyCode==17){//ctrl
+			ctrlDownFlag=true;
+			editMode=true;
+		}
+		
+	});
+	$(window).keyup(function(e){
+		if(e.keyCode==16){//shift
+			shiftDownFlag=false;
+		}else if(e.keyCode==17){//ctrl
+			ctrlDownFlag=false;
+			editMode=false;
+		}
+	});
+});
+thumbnailCanvasHeight=150
+thumbnailWidth=100
+thumbnailHeight=100
+thumbnailLineWidth=3
+thumbnailStep=100
+thumbnailLineColor="#f00"
+var thumbnailImage;
+var thumbnailData;
+function thumbnailLoad(){
+	var canvas = document.getElementById("thumbnailDisplay");
+	var ctx = canvas.getContext('2d');
+	loadThumbnailList("thumbnail/log.csv",function(thumbnailData){
+		//画像の表示間隔計算
+		var intervalMean=0;
+		for(var i=1;i<thumbnailData.length;i++){
+			intervalMean+=thumbnailData[i][0]-thumbnailData[i-1][0]
+		}
+		intervalMean/=(thumbnailData.length-1)
+		thumbnailStep=(intervalMean/1000.0/wavDuration)*CANVAS_WIDTH
+		//画像ロード
+		thumbnailImage=new Array(thumbnailData.length,null)
+		for(var i=0;i<thumbnailData.length;i++){
+			function f(j){
+				var pos_rate=thumbnailData[j][0]/1000.0/wavDuration
+				var img = new Image();
+				img.src = "thumbnail/"+thumbnailData[j][1]+"?" + new Date().getTime();
+				img.onload = function() {
+					ctx.drawImage(img, thumbnailStep*j, 0,thumbnailWidth,thumbnailHeight);
+					ctx.strokeStyle = thumbnailLineColor;
+					ctx.lineWidth = thumbnailLineWidth;
+					// 線分を描画
+					ctx.beginPath();
+					ctx.moveTo(thumbnailStep*j,thumbnailHeight);
+					ctx.lineTo(pos_rate*CANVAS_WIDTH,thumbnailCanvasHeight);
+					ctx.stroke();
+				}
+				thumbnailImage[j]=img
+			};
+			f(i);
+		}
+	});
+}
+callbackAudioInfoLoaded=function(){
+	console.log("init")
+	//thumbnailLoad();
+	//initializeGraph();
+}
+//サーバからロード（サーバ）
+function loadThumbnailList(path,callbackFunc) {
+	var oReq = new XMLHttpRequest();
+	oReq.open("GET", path, true);
+	oReq.responseType = "text";
+	oReq.onload = function (oEvent) {
+		list = oReq.responseText;
+		arr=list.split("\n");
+		thumbnailData=[]
+		for(var i=0;i<arr.length;i++){
+				v=arr[i].split(",");
+				if(v.length>=3){
+					thumbnailData.push([parseFloat(v[1]),v[2]]);
+				}
+		}
+		console.log(thumbnailData);
+		callbackFunc(thumbnailData);
+	};
+	oReq.send(null);
+}
+
+</script>
+<style>
+body{
+margin: 0;
+padding-tom: 30px;
+}
+#viewport canvas {
+    position: absolute;
+}
+#viewLabel canvas {
+    position: absolute;
+}
+#navi{
+width:100%;
+position: fixed;
+height:30px;
+background-color:#ddd;
+z-index:10;
+}
+#infoArea{
+	float:left;
+	width: 1000;
+}
+#wavInfoArea{
+	float:left;
+	padding:10 10 10 10;
+	margin:10 10 10 10;
+	border: dashed 1px;
+	width: 400px;
+	position:relative;
+}
+#evtInfoArea{
+	float:left;
+	padding:10 10 10 10;
+	margin:10 10 10 10;
+	border: dashed 1px;
+	width: 400px;
+	position:relative;
+}
+#loading{
+    border:1px dashed #999;
+    padding:15px;
+    position: fixed;
+    top:50%;
+    left:50%;
+    background-color:#FFF;
+    filter: alpha(opacity=85);
+    -moz-opacity:0.85;
+    opacity:0.85;
+}
+ 
+#loading .loadingMsg{
+    text-align:center;
+    padding-top:100px;
+    width:100px;
+    background-image:url("load.gif");
+    background-position: center top;
+    background-repeat: no-repeat;
+    font-family: "メイリオ"!important;
+}
+</style>
+<script>
+// Loadingイメージ表示関数
+function dispLoading(msg){
+    // 画面表示メッセージ
+    var dispMsg = "";
+ 
+    // 引数が空の場合は画像のみ
+    if( msg != "" ){
+        dispMsg = "<div class='loadingMsg'>" + msg + "</div>";
+    }
+    // ローディング画像が表示されていない場合のみ表示
+    if($("#loading").size() == 0){
+        $("body").append("<div id='loading'>" + dispMsg + "</div>");
+    }	
+}
+ 
+// Loadingイメージ削除関数
+function removeLoading(){
+	$("#loading").remove();
+}
+function selectLabel(x){
+	if(x==null){
+		var obj = document.getElementById("other");
+		var index=obj.selectedIndex;
+		x=obj.options[index].value;
+	}
+	defaultLabel=x;
+	//console.log(x)
+}
+defaultLabel=0;
+lineTypeCol=['#0f0','#f00','#00f','#0ff','#ff0','#f0f','#080','#800','#008','#f80','#80f','#0f8'];
+lineTypeCol2=['#8f8','#f88','#88f','#8ff','#ff8','#f8f','#484','#844','#448','#f84','#84f','#4f8'];
+lineTypeNum=7;
+function writeMark(n){
+	document.write("<span style='color:"+lineTypeCol[n]+";'>*</span>")
+}
+function postLabelOut(){
+	dispLoading("Operations Are In Progress ...");
+	res=getLabelCSV(wavDuration);
+	$.post('/upload_txt',
+		{'label':res},
+		function(data){//成功時のコールバック
+			console.log("updated")
+			//$('#output').html(data);
+			butttonLabelClear();
+			loadLabelDataServer("../"+projectName+"/label.csv?");
+			removeLoading();
+		});
+}
+
+</script>
+</head>
+
+<body>
+
+<div id="navi">
+	<select name="project" id="project" onChange="selectProject(null);">
+		<option value="sample">sample</option>
+		<option value="ieac">sample2</option>
+	</select>
+	<input type="button" value="stop" onclick="butttonStop()">
+	<input type="button" value="play" onclick="butttonPlay()">
+	<input type="button" value="resume" onclick="butttonResume()">
+	<input type="button" value="clear label" onclick="butttonLabelClear()">
+	<input type="button" value="save label(HTML)" onclick="outLabelHTML(wavDuration)">
+	<input type="button" value="save label" onclick='buttonLabelOut()'>
+	<input type="button" value="auto annotation" onclick='postLabelOut()'>
+	<input id="fileSelect" type="file" />
+<input type="radio" name="l" value="0" onChange="selectLabel(0);" checked>0<script>writeMark(0)</script></script>
+<input type="radio" name="l" value="1" onChange="selectLabel(1);" checked>1<script>writeMark(1)</script></script>
+<input type="radio" name="l" value="2" onChange="selectLabel(2);" checked>2<script>writeMark(2)</script></script>
+<input type="radio" name="l" value="3" onChange="selectLabel(3);" checked>3<script>writeMark(3)</script></script>
+<input type="radio" name="l" value="4" onChange="selectLabel(4);" checked>4<script>writeMark(4)</script></script>
+<input type="radio" name="l" value="5" onChange="selectLabel(5);" checked>5<script>writeMark(5)</script></script>
+<input type="radio" name="l" value="6" onChange="selectLabel(6);" checked>6<script>writeMark(6)</script></script>
+<input type="radio" name="l" value="7" onChange="selectLabel(7);" checked>7<script>writeMark(7)</script></script>
+<input type="radio" name="l" value="8" onChange="selectLabel(8);" checked>8<script>writeMark(8)</script></script>
+<!--
+<input type="radio" name="l" value="0" onChange="selectLabel(0);" checked>人の声<script>writeMark(0)</script>
+<input type="radio" name="l" value="1" onChange="selectLabel(1);">人の声（背景）<script>writeMark(1)</script>
+<input type="radio" name="l" value="2" onChange="selectLabel(2);">混ぜる<script>writeMark(2)</script>
+<input type="radio" name="l" value="3" onChange="selectLabel(3);">加熱<script>writeMark(3)</script>
+<input type="radio" name="l" value="4" onChange="selectLabel(null);">切る
+<select name="other" id="other" onChange="selectLabel(null);">
+<option value="5">人参</option>
+<option value="6">玉葱<span style="color:#f00;">+</span></option>
+</select>
+-->
+</div>
+<!--
+<div style="float: left;">
+	ここにwavファイルをドロップ。
+</div>
+-->
+
+<div id="contents" style="float: left;">
+	<!-- 
+	<canvas id="thumbnailDisplay" style="float: left;border: solid 1px; margin-top: 30px;"></canvas>
+	-->
+	<!-- Leftが上、Rightが下 -->
+	<div id="viewUpper" style="float: left; border: solid 1px;">
+		<div style="float: left;">
+			<canvas id="scale1" style="margin-top: 0px;background-color: transparent;"></canvas>
+		</div>
+		<div id="viewLabel" >
+			<canvas id="waveDisplayL2" style="margin-top: 0px;background-color: transparent;"></canvas>
+			<canvas id="waveDisplayL" style="margin-top: 0px;background-color: transparent;"></canvas>
+		</div>
+	</div>
+	<div id="viewLower" style="float: left; border: solid 1px;">
+		<div style="float: left;">
+			<canvas id="scale2" style="margin-top: 0px;background-color: transparent;"></canvas>
+		</div>
+		<div id="viewport">
+			<canvas id="waveDisplay" style="clear: both;  margin-top: 0px;background-color: transparent;"></canvas>
+			<canvas id="waveDisplay2" style="clear: both; margin-top: 0px;background-color: transparent;"></canvas>
+		</div>
+	</div>
+</div>
+<div id="infoArea">
+	<div id="wavInfoArea" >
+	</div>
+	<div id="evtInfoArea">
+	</div>
+</div>
+<div id="outLabel" style="float: left;clear: both; border: dashed 1px;width: 1000px;">
+</div>
+<div style="float: left;">
+	<h3>操作</h3>
+	<ul>
+	<li>左クリック：分離音再生</li>
+	<li>右クリック：ラベル変更</li>
+	<li>中クリック：アノテーション済みかどうかの<フラグ切り替え/li>
+	<li>CTRL+中ドラッグ：ラベル範囲変更</li>
+	<li>CTRL+左ドラッグ：ラベル追加</li>
+	<li>CTRL+右クリック：ラベル削除</li>
+	</ul>
+</div>
+</body>
+</html>

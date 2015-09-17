@@ -1,0 +1,12 @@
+python mel.py ./sep_files/sep_0.wav ./sep_files/ plot ./mel_img/
+python mel.py ./sep_files/sep_1.wav ./sep_files/ plot ./mel_img/
+python mel.py ./sep_files/sep_10.wav ./sep_files/ plot ./mel_img/
+python mel.py ./sep_files/sep_11.wav ./sep_files/ plot ./mel_img/
+python mel.py ./sep_files/sep_2.wav ./sep_files/ plot ./mel_img/
+python mel.py ./sep_files/sep_3.wav ./sep_files/ plot ./mel_img/
+python mel.py ./sep_files/sep_4.wav ./sep_files/ plot ./mel_img/
+python mel.py ./sep_files/sep_5.wav ./sep_files/ plot ./mel_img/
+python mel.py ./sep_files/sep_6.wav ./sep_files/ plot ./mel_img/
+python mel.py ./sep_files/sep_7.wav ./sep_files/ plot ./mel_img/
+python mel.py ./sep_files/sep_8.wav ./sep_files/ plot ./mel_img/
+python mel.py ./sep_files/sep_9.wav ./sep_files/ plot ./mel_img/
