@@ -32,6 +32,7 @@ end
 newDist=[]
 dist.each_with_index{|d,index|
 	nd=d.dup
+	p comb[index][2]
 	comb[index][2].each{|l|
 		d1=comb[index][1]
 		d2=comb[l][1]

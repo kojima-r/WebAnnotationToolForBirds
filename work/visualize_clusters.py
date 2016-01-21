@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -14,9 +16,12 @@ filename= sys.argv[1]#"int_furu_0505_140_init1min.wav"
 evt_map_filename= sys.argv[2]
 frm_map_filename= None
 output_postfix= sys.argv[3]
+if len(sys.argv)>=5:
+	cutoff= int(sys.argv[4])
+else:
+	cutoff= 150
 #frm_map_filename= sys.argv[2]
 #cutoff= 100
-cutoff= 150
 frame_sec=1.0/100 #10msec
 
 def read_cluster_event(filename):
@@ -207,5 +212,5 @@ for l3 in line3:
 	x_vec=l3[2]
 	theta=(180-l3[3])/360.0
 	for c,v,t in zip(cls_vec,x_vec,theta):
-		print ",".join(map(str,[seg_id,c,v,t]))
+		print ",".join(map(str,[seg_id,c,v,t,seg_id]))
 

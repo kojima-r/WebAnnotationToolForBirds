@@ -7,3 +7,4 @@ ruby convert_labels.rb ${target}> label_wavlist.csv
 python csvlist2npy.py ./label_wavlist.csv ".mel10" "dataset/" ""
 mv dataset/data.npy dataset/data_org.npy
 sh dim_reduction.sh 
+
