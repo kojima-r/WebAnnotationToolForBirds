@@ -12,7 +12,7 @@ cd ${work}/classification_mel10
 echo "./init_aimp.sh" #>$o
 ./init.sh
 # 4 class 30 mixture
-./run_aimp.sh 4 30
+./run_aimp.sh 8 30
 cd dir
 ./run.sh
 cd ../lm

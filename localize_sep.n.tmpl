@@ -33,7 +33,7 @@
       <Parameter name="TF_CHANNEL_SELECTION" type="object" value="&lt;Vector&lt;int&gt; 0 1 2 3 4 5 6&gt;" description="Microphone channels for localization"/>
       <Parameter name="LENGTH" type="int" value="512" description="The length of a frame (per channel)."/>
       <Parameter name="SAMPLING_RATE" type="int" value="16000" description="Sampling Rate (Hz)."/>
-      <Parameter name="A_MATRIX" type="string" value="./microcone_rectf.zip" description="Filename of a transfer function matrix."/>
+      <Parameter name="A_MATRIX" type="string" value="pmt7" description="Filename of a transfer function matrix."/>
       <Parameter name="WINDOW" type="int" value="50" description="The number of frames used for calculating a correlation function."/>
       <Parameter name="WINDOW_TYPE" type="string" value="FUTURE" description="Window selection to accumulate a correlation function. If PAST, the past WINDOW frames from the current frame are used for the accumulation. If MIDDLE, the current frame will be the middle of the accumulated frames. If FUTURE, the future WINDOW frames from the current frame are used for the accumulation. FUTURE is the default from version 1.0, but this makes a delay since we have to wait for the future information. PAST generates a internal buffers for the accumulation, which realizes no delay for localization."/>
       <Parameter name="PERIOD" type="int" value="50" description="The period in which the source localization is processed."/>
@@ -53,9 +53,9 @@
 
     <Node name="node_SourceTracker_1" type="SourceTracker" x="586.4851485148515" y="270.3663366336634">
       <Parameter name="THRESH" type="float" value="pmt2" description="Power threshold for localization results. A localization result with higher power than THRESH is tracked, otherwise ignored."/>
-      <Parameter name="PAUSE_LENGTH" type="float" value="1000" description="Life duration of source in ms. When any localization result for a source is found for more than PAUSE_LENGTH / 10 iterations, the source is terminated. [default: 800]"/>
+      <Parameter name="PAUSE_LENGTH" type="float" value="pmt4" description="Life duration of source in ms. When any localization result for a source is found for more than PAUSE_LENGTH / 10 iterations, the source is terminated. [default: 800]"/>
       <Parameter name="COMPARE_MODE" type="string" value="DEG" description="The comparison algorithm of Sources. DEG uses inner product, and TFINDEX uses index search (faster)."/>
-      <Parameter name="MIN_SRC_INTERVAL" type="float" value="15" description="Source interval threshold in degree. When the angle between a localization result and a source is smaller than MIN_SRC_INTERVAL, the same ID is given to the localization result. [default: 20]"/>
+      <Parameter name="MIN_SRC_INTERVAL" type="float" value="pmt5" description="Source interval threshold in degree. When the angle between a localization result and a source is smaller than MIN_SRC_INTERVAL, the same ID is given to the localization result. [default: 20]"/>
       <Parameter name="MIN_TFINDEX_INTERVAL" type="int" value="4" description="Source interval threshold in degree. When the angle between a localization result and a source is smaller than MIN_TFINDEX_INTERVAL, the same ID is given to the localization result. [default: 3]"/>
       <Parameter name="MIN_ID" type="int" value="0" description="Minimum ID of source locations. MIN_ID should be greater than 0 or equal."/>
       <Parameter name="DEBUG" type="bool" value="false" description="Output debug information if true [default: false]"/>
@@ -82,15 +82,18 @@
       <Parameter name="STEP_LEVEL" type="float" value="0.2" description="Step level of histogram bin (Width of each histogram bin) in dB [default:0.2]"/>
       <Parameter name="DEBUG" type="bool" value="false" description="Prints the histogram for each 100 iterations."/>
     </Node>
+	<Node name="node_SourceIntervalExtender_1" type="SourceIntervalExtender" x="510" y="344">
+	  <Parameter name="PREROLL_LENGTH" type="int" value="50" description="Preroll length in frame. [default: 50]"/>
+    </Node>
     <Node name="node_SpectralGainFilter_1" type="SpectralGainFilter" x="882.1782178217821" y="494.37623762376234">
     </Node>
     <Node name="node_GHDSS_1" type="GHDSS" x="470" y="413.734375">
       <Parameter name="LENGTH" type="int" value="512" description="The frame length of each channel (in samples) [default: 512]."/>
       <Parameter name="ADVANCE" type="int" value="160" description="The shift length beween adjacent frames (in samples)[default: 160]."/>
       <Parameter name="SAMPLING_RATE" type="int" value="16000" description="Sampling rate (Hz) [default: 16000]."/>
-      <Parameter name="LOWER_BOUND_FREQUENCY" type="int" value="pmt3" description="Lower bound of frequency (Hz). [default: 0]"/>
+      <Parameter name="LOWER_BOUND_FREQUENCY" type="int" value="pmt6" description="Lower bound of frequency (Hz). [default: 0]"/>
       <Parameter name="UPPER_BOUND_FREQUENCY" type="int" value="10000" description="Upper bound of frequency (Hz). [default: 8000]"/>
-      <Parameter name="TF_CONJ_FILENAME" type="string" value="./tf.zip" description="Filename of a pre-measured transfer function for separation."/>
+      <Parameter name="TF_CONJ_FILENAME" type="string" value="pmt7" description="Filename of a pre-measured transfer function for separation."/>
       <Parameter name="INITW_FILENAME" type="string" value="" description="Filename of an initial separation matrix. If specified, a matrix in INITW_FILENAME is used as an initial separation matrix. Otherwise, initial separation matrix is estimated from the geometrical relationship or pre-measured TF according to TF_CONJ."/>
       <Parameter name="SS_METHOD" type="string" value="ADAPTIVE" description="The calculation method for SS step size parameter corresponding to the blind separation part. &quot;FIX&quot; uses a fixed step size,&quot;LC_MYU&quot; uses the same value as LC_MYU, and &quot;ADAPTIVE&quot; adaptively estimates an optimal step size. [default: ADAPTIVE]"/>
       <Parameter name="SS_SCAL" type="float" value="1.0" description="Scaling factor for SS step size. [default: 1.0]"/>
@@ -150,7 +153,8 @@
     <Link from="node_CalcSpecSubGain_1" output="GAIN" to="node_SpectralGainFilter_1" input="GAIN"/>
     <Link from="node_SpectralGainFilter_1" output="OUTPUT_SPEC" to="node_Synthesize_1" input="INPUT"/>
     <Link from="node_MultiFFT_1" output="OUTPUT" to="node_GHDSS_1" input="INPUT_FRAMES"/>
-    <Link from="node_SourceTracker_1" output="OUTPUT" to="node_GHDSS_1" input="INPUT_SOURCES"/>
+    <Link from="node_SourceTracker_1" output="OUTPUT" to="node_SourceIntervalExtender_1" input="SOURCES"/>
+    <Link from="node_SourceIntervalExtender_1" output="OUTPUT" to="node_GHDSS_1" input="INPUT_SOURCES"/>
     <Link from="node_Synthesize_1" output="OUTPUT" to="node_SaveWavePCM_1" input="INPUT"/>
     <Link from="node_LocalizeMUSIC_1" output="SPECTRUM" to="node_PyCodeExecutor_1" input="SPECTRUM"/>
     <Link from="node_SourceTracker_1" output="OUTPUT" to="node_PyCodeExecutor_2" input="TRACKING"/>

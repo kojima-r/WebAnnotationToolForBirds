@@ -8,6 +8,7 @@
 <script src="audio_play.js"></script>
 <script src="graph.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+<script src="jquery.gpfloat-1.0.min.js"></script>
 <script>
 function getRequest(){
 	if(location.search.length > 1) {
@@ -24,96 +25,99 @@ function getRequest(){
 }
 
 function zoomIn(){
-	var canvas = se.getElementById("thumbnailDisplay");
-	canvas.width*=1.5;
+	SCALE_WIDTH=50;
 	var canvas = document.getElementById("waveDisplayL");
-	canvas.width*=1.5;
-	var canvas = document.getElementById("waveDisplayL2");
-	canvas.width*=1.5;
-	var canvas = document.getElementById("waveDisplay");
-	canvas.width*=1.5;
-	var canvas = document.getElementById("waveDisplay2");
-	canvas.width*=1.5;
-	var w,h;
-	w=$('#viewLabel').css("width");
-	$('#viewLabel').css("width",w*1.5);
-	h=$('#viewLabel').css("height");
-	$('#viewLabel').css("height",h*1.5);
-	
-	w=$('#viewport').css("width");
-	$('#viewport').css("width",w*1.5);
-	h=$('#viewport').css("height");
-	$('#viewport').css("height",h*1.5);
-	
+	CANVAS_WIDTH=canvas.width*1.5;
+	setCanvasSize(CANVAS_WIDTH,CANVAS_HEIGHT,SCALE_WIDTH);
 	normalizeLinePositionW(1.5);
-	CANVAS_WIDTH=canvas.width;
 	updateLabelCanvas();
+	drawSpectrogram();
 	startLoadBinary();
 	thumbnailLoad();
 }
 function zoomOut(){
-	var canvas = document.getElementById("thumbnailDisplay");
-	canvas.width*=2/3;
+	SCALE_WIDTH=50;
 	var canvas = document.getElementById("waveDisplayL");
-	canvas.width*=2/3;
-	var canvas = document.getElementById("waveDisplayL2");
-	canvas.width*=2/3;
-	var canvas = document.getElementById("waveDisplay");
-	canvas.width*=2/3;
-	var canvas = document.getElementById("waveDisplay2");
-	canvas.width*=2/3;
-	var w,h;
-	w=$('#viewLabel').css("width");
-	$('#viewLabel').css("width",w*2/3);
-	h=$('#viewLabel').css("height");
-	$('#viewLabel').css("height",h*2/3);
-	
-	w=$('#viewport').css("width");
-	$('#viewport').css("width",w*2/3);
-	h=$('#viewport').css("height");
-	$('#viewport').css("height",h*2/3);
-	
+	CANVAS_WIDTH=canvas.width*2/3;
+	setCanvasSize(CANVAS_WIDTH,CANVAS_HEIGHT,SCALE_WIDTH);
+
 	normalizeLinePositionW(2/3);
-	CANVAS_WIDTH=canvas.width;
 	updateLabelCanvas();
+	drawSpectrogram();
 	startLoadBinary();
 	thumbnailLoad();
 }
 var projectName;
+function setCanvasSize(w,h,sw){
+	//var canvas = document.getElementById("thumbnailDisplay");
+	//canvas.width = w;
+	//canvas.height = h;
+	var canvas = document.getElementById("waveDisplay");
+	canvas.width = w;
+	canvas.height = h;
+	var canvas = document.getElementById("waveDisplay2");
+	canvas.width = w;
+	canvas.height = h;
+	canvas = document.getElementById("waveDisplayL");
+	canvas.width = w;
+	canvas.height = h;
+	canvas = document.getElementById("waveDisplayL2");
+	canvas.width = w;
+	canvas.height = h;
+	//
+	$('#viewLabel').width=w;
+	$('#viewLabel').height=h;
+	$('#viewport').width=w;
+	$('#viewport').height=h;
+	//
+	/*
+	$('#viewUpper').width=w+sw;
+	$('#viewUpper').height=h;
+	$('#viewLower').width=w+sw;
+	$('#viewLower').height=h;
+	*/
+	$('#viewUpper').css("width",w+sw);
+	$('#viewUpper').css("height",h);
+	$('#viewLower').css("width",w+sw);
+	$('#viewLower').css("height",h);
+}
+
+function drawSpectrogram(){
+	canvas_wav = document.getElementById("waveDisplay");
+	if ( ! canvas_wav || ! canvas_wav.getContext ) { return false; }
+	var ctx = canvas_wav.getContext('2d');
+	var img = new Image();
+	img.src = "../"+projectName+"/specgram.png";
+	img.onload = function() {
+		h_space=40
+		ctx.drawImage(img, 0, h_space,CANVAS_WIDTH,CANVAS_HEIGHT-h_space);
+	}
+}
 window.onload=function(){
 	setInfoTagID("wavInfoArea");
-	//var canvas = document.getElementById("thumbnailDisplay");
-	//canvas.width = CANVAS_WIDTH;
-	//canvas.height = thumbnailCanvasHeight;
-	var canvas = document.getElementById("waveDisplay");
-	canvas.width = CANVAS_WIDTH;
-	canvas.height = CANVAS_HEIGHT;
-	var canvas = document.getElementById("waveDisplay2");
-	canvas.width = CANVAS_WIDTH;
-	canvas.height = CANVAS_HEIGHT;
-	canvas = document.getElementById("waveDisplayL");
-	canvas.width = CANVAS_WIDTH;
-	canvas.height = CANVAS_HEIGHT;
-	canvas = document.getElementById("waveDisplayL2");
-	canvas.width = CANVAS_WIDTH;
-	canvas.height = CANVAS_HEIGHT;
-	$('#viewLabel').css("width",CANVAS_WIDTH);
-	$('#viewLabel').css("height",CANVAS_HEIGHT);
-	$('#viewport').css("width",CANVAS_WIDTH);
-	$('#viewport').css("height",CANVAS_HEIGHT);
-	$('#contents').css("width",CANVAS_WIDTH);
-	$('#contents').css("padding-top",30);
 	SCALE_WIDTH=50
 	canvas = document.getElementById("scale1");
 	canvas.width = SCALE_WIDTH;
 	canvas.height = CANVAS_HEIGHT;
-	$('#viewUpper').css("width",CANVAS_WIDTH+SCALE_WIDTH);
-	$('#viewUpper').css("height",CANVAS_HEIGHT);
 	canvas = document.getElementById("scale2");
 	canvas.width = SCALE_WIDTH;
 	canvas.height = CANVAS_HEIGHT;
-	$('#viewLower').css("width",CANVAS_WIDTH+SCALE_WIDTH);
-	$('#viewLower').css("height",CANVAS_HEIGHT);
+
+	setCanvasSize(CANVAS_WIDTH,CANVAS_HEIGHT,SCALE_WIDTH);
+	$('#contents').css("width",CANVAS_WIDTH);
+	$('#contents').css("padding-top",30);
+	//
+	$("#scale1").gpFloatY();
+	$("#scale1").css('z-index',1);
+	$("#scale2").gpFloatY();
+	$("#scale2").css('z-index',1);
+	$("#viewScale1").width(SCALE_WIDTH);
+	$("#viewScale1").height(CANVAS_HEIGHT);
+	$("#viewScale2").width(SCALE_WIDTH);
+	$("#viewScale2").height(CANVAS_HEIGHT);
+	//
+	$("#infoArea").gpFloatY();
+	$("#infoAreaDummy").height($("#infoArea").height()+300)
 	//
 	var get = getRequest();
 	projectName = get['project'];
@@ -124,22 +128,20 @@ window.onload=function(){
 	if(!labelName){
 		labelName="label"
 	}
-	//
-	canvas_wav = document.getElementById("waveDisplay");
-	if ( ! canvas_wav || ! canvas_wav.getContext ) { return false; }
-	var ctx = canvas_wav.getContext('2d');
-	var img = new Image();
-	img.src = "../"+projectName+"/specgram.png";
+	//スペクトログラム表示
+	drawSpectrogram();
 	//スペクトログラム縦軸表示
 	h_space=40
 	var freq = [] , max = 9;
 	for( var i=1; freq.push((max-i++)*1000) < max;);
-	img.onload = function() {
-		ctx.drawImage(img, 0, h_space,CANVAS_WIDTH,CANVAS_HEIGHT-h_space);
-	}
 	ctx_scale2 = document.getElementById("scale2").getContext('2d');
-	
 	hstep=(CANVAS_HEIGHT-h_space)/(freq.length-1)
+	//塗りつぶし
+	old_fs=ctx_scale2.fillStyle
+	ctx_scale2.fillStyle='#fff'
+	ctx_scale2.fillRect(0,0,SCALE_WIDTH,CANVAS_HEIGHT);
+	ctx_scale2.fillStyle=old_fs
+	//
 	for(var i=0;i<freq.length;i++){
 		ctx_scale2.fillText(freq[i],10,h_space+hstep*i);
 		ctx_scale2.SCALE_WIDTH
@@ -154,6 +156,12 @@ window.onload=function(){
 	h_space=40
 	var dirs = [-180,-135,-90,-45,0,45,90,135,180]
 	ctx_scale1 = document.getElementById("scale1").getContext('2d');
+	//塗りつぶし
+	old_fs=ctx_scale1.fillStyle;
+	ctx_scale1.fillStyle='#fff';
+	ctx_scale1.fillRect(0,0,SCALE_WIDTH,CANVAS_HEIGHT);
+	ctx_scale1.fillStyle=old_fs;
+	//
 	hstep=(CANVAS_HEIGHT)/(dirs.length-1)
 	hstep_text=(CANVAS_HEIGHT-10)/(dirs.length-1)
 	ctx_scale1.strokeStyle = '#000';
@@ -171,7 +179,9 @@ window.onload=function(){
 	ctx_scale1.stroke()
 	//
 	callbackAudioInfoLoaded=function(){
-		loadLabelDataServer("../"+projectName+"/"+labelName+".csv")
+		loadLabelDataServer("../"+projectName+"/"+labelName+".csv?")
+		loadLabelDataServer("../"+projectName+"/"+labelName+".csv?")
+		$("#waveDisplayL").css('background-image', 'url("../'+projectName+'/music.png")');
 	}
 	labelSelectedCallback=function(i){
 		arr=findPoint(i);
@@ -179,13 +189,15 @@ window.onload=function(){
 		if(arr.length>0){
 			sep=arr[0][4];
 			filename="../"+projectName+"/sep_files/sep_"+sep+".wav";
+			spec_filename="../"+projectName+"/sep_files/sep_"+sep+".png";
 			console.log("../"+projectName+"/sep_files/sep_"+sep+".wav");
 			playSoundFile("../"+projectName+"/sep_files/sep_"+sep+".wav");
 			
 			
-			$("#evtInfoArea").html(
+			$("#evt_file").html(
 				"file name : "+filename+"<br>"
 				);
+			$("#evt_spec").attr("src",spec_filename);
 		}
 		
 	}
@@ -326,6 +338,7 @@ z-index:10;
 	border: dashed 1px;
 	width: 400px;
 	position:relative;
+	overflow-x: scroll;
 }
 #loading{
     border:1px dashed #999;
@@ -399,6 +412,11 @@ function postLabelOut(){
 		});
 }
 
+function outLabelImage(){
+	cvs = document.getElementById("waveDisplayL");
+	var dataUrl = cvs.toDataURL();
+  	document.getElementById("outImg").src = dataUrl;
+}
 </script>
 </head>
 
@@ -415,8 +433,9 @@ function postLabelOut(){
 	<input type="button" value="clear label" onclick="butttonLabelClear()">
 	<input type="button" value="save label(HTML)" onclick="outLabelHTML(wavDuration)">
 	<input type="button" value="save label" onclick='buttonLabelOut()'>
+	<input type="button" value="save img" onclick='outLabelImage()'>
 	<input type="button" value="auto annotation" onclick='postLabelOut()'>
-	<input id="fileSelect" type="file" />
+	<input id="fileSelect" style="visibility:hidden;" type="file" />
 <input type="radio" name="l" value="0" onChange="selectLabel(0);" checked>0<script>writeMark(0)</script></script>
 <input type="radio" name="l" value="1" onChange="selectLabel(1);" checked>1<script>writeMark(1)</script></script>
 <input type="radio" name="l" value="2" onChange="selectLabel(2);" checked>2<script>writeMark(2)</script></script>
@@ -450,16 +469,17 @@ function postLabelOut(){
 	-->
 	<!-- Leftが上、Rightが下 -->
 	<div id="viewUpper" style="float: left; border: solid 1px;">
-		<div style="float: left;">
+		<div id="viewScale1" style="float: left;">
 			<canvas id="scale1" style="margin-top: 0px;background-color: transparent;"></canvas>
 		</div>
 		<div id="viewLabel" >
 			<canvas id="waveDisplayL2" style="margin-top: 0px;background-color: transparent;"></canvas>
-			<canvas id="waveDisplayL" style="margin-top: 0px;background-color: transparent;"></canvas>
+			<canvas id="waveDisplayL" style="margin-top: 0px;background-size:100% 100%;"></canvas>
+			<!--<canvas id="waveDisplayL" style="margin-top: 0px;background-color: transparent;"></canvas>-->
 		</div>
 	</div>
 	<div id="viewLower" style="float: left; border: solid 1px;">
-		<div style="float: left;">
+		<div id="viewScale2" style="float: left;">
 			<canvas id="scale2" style="margin-top: 0px;background-color: transparent;"></canvas>
 		</div>
 		<div id="viewport">
@@ -468,15 +488,34 @@ function postLabelOut(){
 		</div>
 	</div>
 </div>
+<div id="infoAreaDummy" style="width:1000;float: left;">
+</div>
 <div id="infoArea">
 	<div id="wavInfoArea" >
 	</div>
 	<div id="evtInfoArea">
+		<p id="evt_file"></p>
+		<img id="evt_spec"></img>
+	</div>
+	<div id="usage" style="float: left;">
+	<h3>Usage</h3>
+	<ul>
+	<li>left click: play sound</li>
+	<li>right click: annotate a label</li>
+	<li>middle click: change an annotated flag</li>
+	<li>CTRL+left click: add a new label</li>
+	<li>CTRL+right click: delete selected label</li>
+	<li>CTRL+Middle DD : annotate labels in the selected range</li>
+	</ul>
 	</div>
 </div>
+
+
+<img id="outImg" src=""></img>
 <div id="outLabel" style="float: left;clear: both; border: dashed 1px;width: 1000px;">
 </div>
-<div style="float: left;">
+
+	<!--
 	<h3>操作</h3>
 	<ul>
 	<li>左クリック：分離音再生</li>
@@ -485,7 +524,9 @@ function postLabelOut(){
 	<li>CTRL+中ドラッグ：ラベル範囲変更</li>
 	<li>CTRL+左ドラッグ：ラベル追加</li>
 	<li>CTRL+右クリック：ラベル削除</li>
-	</ul>
+</ul>
+
+-->
 </div>
 </body>
 </html>

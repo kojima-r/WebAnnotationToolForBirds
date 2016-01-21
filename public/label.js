@@ -40,6 +40,7 @@ function loadLabelDataServer(path){
 	oReq.responseType = "text";
 	oReq.onload = function (oEvent) {
 		list = oReq.responseText;
+		console.log(list)
 		parseCSVLines(list);
 	};
 	oReq.send(null);
@@ -78,6 +79,21 @@ function parseCSVLines(text){
 			}
 			//if(count%5==0){
 			lines.push([nowID+idCount,parseInt(v[1]),x,y,nowID,UNANNOTATED_SEG])
+			//}
+			if(maxID<nowID){
+				maxID=nowID
+			}
+			count+=1;
+			prevID=nowID;
+		}else if(v.length==5){//行：ID,ラベル,X,Y,ID(ANNOTATED_FLAG=0)
+			var x=parseFloat(v[2])/wavDuration*CANVAS_WIDTH;
+			var y=parseFloat(v[3])*CANVAS_HEIGHT;
+			var nowID=parseInt(v[4]);
+			if(prevID!=nowID){
+				count=0;
+			}
+			//if(count%5==0){
+			lines.push([nowID+idCount,parseInt(v[1]),x,y,nowID,0])
 			//}
 			if(maxID<nowID){
 				maxID=nowID
@@ -399,12 +415,15 @@ preloadLabelCanvas = function() {
 				drawEndPoint();
 				// マウス位置のスクリーン座標（mouseX, mouseY）を取得
 				calcMouseCoordinate(e);
-				// mouseX,sX,
-				drawRect(mouseX,mouseY,sX,sY,'#999',1);
 				// マウス位置の点の描画
 				drawTempPoint();
 				drawAllLines();
 				updateLabelCanvas();
+				// draw region 
+				col=lineTypeCol[defaultLabel%lineTypeCol.length];
+				drawRect(mouseX-1,mouseY-1,sX+1,sY+1,"#000",1);
+				drawRect(mouseX+1,mouseY+1,sX-1,sY-1,"#000",1);
+				drawRect(mouseX,mouseY,sX,sY,col,1);
 				return 0;
 			}else if(catchedPoint==NO_POINT){
 				// 座標軸の初期化
@@ -603,7 +622,6 @@ function drawEndPoint() {
 		drawLine(sX, sY, eX, eY, '#000', 1,1.0);
 	}	
 }
-
 function drawAllLines() {
 	prevId=null;
 	for(var i=0;i<lines.length;i++){

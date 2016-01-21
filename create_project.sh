@@ -9,13 +9,15 @@
 #o=/tmp/birds_txt
 
 cp -r ${org_work} ${work}
-python setparam.py ${work} ${hark_src_num} ${hark_thresh} ${hark_lowest_freq}
+ln -s ./tf/${hark_tf} ${work}/${hark_tf}
 #cp ${target} ${work}/original.wav
 sox ${target} -r 16000 ${work}/original.wav
 mkdir ./public/${project}
-cp ${target} ./public/${project}/original.wav
+sox ${target} -r 16000 -c 1 ./public/${project}/original.wav
+sh get_audio_info.sh ./public/${project}/original.wav >./public/${project}/original.json
 cp config.sh ./public/${project}/config
 mkdir public/${project}/sep_files                                    
+
 
 cd ${main}
 

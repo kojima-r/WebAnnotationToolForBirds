@@ -94,6 +94,28 @@ function loadServer(path,callbackFunc) {
         }
     };
     oReq.send(null);
+	var infoReq = new XMLHttpRequest();
+	var reg=/(.*)(?:\.([^.]+$))/;
+	info_path=path.match(reg)[1]+".json"
+	console.log(path)
+	console.log(info_path)
+    infoReq.open("GET", info_path, true);
+    infoReq.responseType = "text";
+    infoReq.onload  = function (oEvent) {
+        var obj = JSON.parse(this.responseText);
+        if (!obj){
+        	alert('Error');
+            return;
+        }
+		console.log(obj);
+		sampleRate=obj["sampleRate"]
+		wavDuration=obj["duration"]
+		if(callbackAudioInfoLoaded!=null){
+			callbackAudioInfoLoaded();
+			callbackAudioInfoLoaded=null;
+		}
+    };
+	infoReq.send(null)
 }
 //ファイルオブジェクトからロード（ローカル）
 function loadFile(files) {
@@ -253,6 +275,7 @@ function decodeSound(data) {
 		console.log(wavDuration);
 		if(callbackAudioInfoLoaded!=null){
 			callbackAudioInfoLoaded();
+			callbackAudioInfoLoaded=null;
 		}
 	}, onError);
 }
