@@ -9,7 +9,7 @@
 #o=/tmp/birds_txt
 
 cp -r ${org_work} ${work}
-ln -s ./tf/${hark_tf} ${work}/${hark_tf}
+ln -s ${main}/tf/${hark_tf} ${work}/${hark_tf}
 #cp ${target} ${work}/original.wav
 sox ${target} -r 16000 ${work}/original.wav
 mkdir ./public/${project}

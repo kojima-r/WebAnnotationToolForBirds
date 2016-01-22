@@ -8,12 +8,15 @@ import wave
 from pylab import *
 import matplotlib.cm as cm
 from itertools import chain
-
+import os.path
 #init pygame
 
 filename= sys.argv[1]#"int_furu_0505_140_init1min.wav"
 #evt_map_filename= None
 evt_map_filename= sys.argv[2]
+if not os.path.exists(evt_map_filename):
+    print >>sys.stderr,"[WARN] event file does not exist:",evt_map_filename
+    evt_map_filename=None
 frm_map_filename= None
 output_postfix= sys.argv[3]
 if len(sys.argv)>=5:
@@ -188,6 +191,8 @@ for l in line2:
 		axs.scatter(l2[1]*frame_sec, (l2[2])*360.0/(2.0*np.pi),marker=u'+',s=10,color=cv,alpha=.5)
 		#axs.plot(l2[1]*frame_sec, (l2[2])*360.0/(2.0*np.pi))
 	else:
+                cls_vec=[0]*len(l2[1])
+		line3.append([seg_id,cls_vec,l2[1]*frame_sec, (l2[2])*360.0/(2.0*np.pi)])
 		axs.scatter(l2[1]*frame_sec, (l2[2])*360.0/(2.0*np.pi),marker=u'+',s=10,alpha=.5)
 	
 	if t%2==0:

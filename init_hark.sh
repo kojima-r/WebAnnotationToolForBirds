@@ -15,7 +15,7 @@ echo "... visualize"
 cd ${work}
 sh ./run_viz_mel10.sh
 cp specgram.png ${main}/public/${project}/specgram.png
-python music.py
+python music.py $hark_tf
 cp music.png ${main}/public/${project}/music.png
 cd ${main}
 ruby ./reduce_label.rb ${work}/label_mel10.csv 10 > ${main}/public/${project}/label.csv

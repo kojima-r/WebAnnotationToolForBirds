@@ -1,7 +1,16 @@
+import sys
 import numpy as np; np.random.seed(0)
 import seaborn as sns; sns.set()
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+from HARK_TF_Parser.sorting_mat import  permutation_hark_tf
+
+
+tf_filename=sys.argv[1]
+
+permutation=permutation_hark_tf(tf_filename).values()
+permutation.reverse()
+
 
 mat_list=[]
 for line in open("music.txt"):
@@ -9,11 +18,12 @@ for line in open("music.txt"):
 	mat_list.append(map(float,arr))
 
 data = np.array(mat_list)
-print data
-print data.shape
-col=data.shape[1]
-#data=np.c_[data[:,col/2:],data[:,:col/2]]
-data=data[:,::-1]
+data=data[:,permutation]
+#print data
+print "# MUSIC spectrogram:",data.shape
+#col=data.shape[1]
+###data=np.c_[data[:,col/2:],data[:,:col/2]]
+#data=data[:,::-1]
 
 ax = sns.heatmap(data.transpose(),cbar=False,cmap=cm.Greys)
 sns.plt.axis("off")
