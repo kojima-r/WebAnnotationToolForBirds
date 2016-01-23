@@ -1,0 +1,19 @@
+org_work=/export/kojima/WebAnnotationToolForBirds/RD150503_35_090530_work
+work=/export/kojima/WebAnnotationToolForBirds/test_geotf00_work
+main=/export/kojima/WebAnnotationToolForBirds
+project=test_geotf00
+target=audio/test_geotf00.wav
+
+#textgrid=rd150503_35_090530_wav_species_corrected_merged_cleaned.TextGrid
+
+hark_tf="<%= config.tf %>"
+#hark_tf="microcone_geotf.zip"
+
+hark_src_num=<%= config.loc_src_num %>
+hark_thresh=<%= config.loc_thresh %>
+hark_lowest_freq=<%= config.loc_lowest_freq %>
+
+hark_pause=<%= config.sep_pause %>
+hark_min_interval_src=<%= config.sep_min_interval %>
+hark_lowest_freq_ghdss=<%= config.sep_lowest_freq %>
+
