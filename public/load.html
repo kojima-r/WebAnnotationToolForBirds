@@ -3,12 +3,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Web annotation tool</title>
-<script src="label.js"></script>
-<script src="audio.js"></script>
-<script src="audio_play.js"></script>
-<script src="graph.js"></script>
+<script src="/label.js"></script>
+<script src="/audio.js"></script>
+<script src="/audio_play.js"></script>
+<script src="/graph.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
-<script src="jquery.gpfloat-1.0.min.js"></script>
+<script src="/jquery.gpfloat-1.0.min.js"></script>
 <script>
 function getRequest(){
 	if(location.search.length > 1) {
@@ -48,6 +48,7 @@ function zoomOut(){
 	thumbnailLoad();
 }
 var projectName;
+var base_path="/";
 function setCanvasSize(w,h,sw){
 	//var canvas = document.getElementById("thumbnailDisplay");
 	//canvas.width = w;
@@ -87,7 +88,7 @@ function drawSpectrogram(){
 	if ( ! canvas_wav || ! canvas_wav.getContext ) { return false; }
 	var ctx = canvas_wav.getContext('2d');
 	var img = new Image();
-	img.src = "../"+projectName+"/specgram.png";
+	img.src = base_path+projectName+"/specgram.png";
 	img.onload = function() {
 		h_space=40
 		ctx.drawImage(img, 0, h_space,CANVAS_WIDTH,CANVAS_HEIGHT-h_space);
@@ -179,19 +180,18 @@ window.onload=function(){
 	ctx_scale1.stroke()
 	//
 	callbackAudioInfoLoaded=function(){
-		loadLabelDataServer("../"+projectName+"/"+labelName+".csv?")
-		loadLabelDataServer("../"+projectName+"/"+labelName+".csv?")
-		$("#waveDisplayL").css('background-image', 'url("../'+projectName+'/music.png")');
+		loadLabelDataServer(base_path+projectName+"/"+labelName+".csv?")
+		$("#waveDisplayL").css('background-image', 'url("'+base_path+projectName+'/music.png")');
 	}
 	labelSelectedCallback=function(i){
 		arr=findPoint(i);
 		console.log(arr);
 		if(arr.length>0){
 			sep=arr[0][4];
-			filename="../"+projectName+"/sep_files/sep_"+sep+".wav";
-			spec_filename="../"+projectName+"/sep_files/sep_"+sep+".png";
-			console.log("../"+projectName+"/sep_files/sep_"+sep+".wav");
-			playSoundFile("../"+projectName+"/sep_files/sep_"+sep+".wav");
+			filename=base_path+projectName+"/sep_files/sep_"+sep+".wav";
+			spec_filename=base_path+projectName+"/sep_files/sep_"+sep+".png";
+			console.log(base_path+projectName+"/sep_files/sep_"+sep+".wav");
+			playSoundFile(base_path+projectName+"/sep_files/sep_"+sep+".wav");
 			
 			
 			$("#evt_file").html(
@@ -201,7 +201,7 @@ window.onload=function(){
 		}
 		
 	}
-	audioInitialize("../"+projectName+"/original.wav");
+	audioInitialize(base_path+projectName+"/original.wav");
 }
 var shiftDownFlag;
 var ctrlDownFlag;
@@ -356,7 +356,7 @@ z-index:10;
     text-align:center;
     padding-top:100px;
     width:100px;
-    background-image:url("load.gif");
+    background-image:url("/load.gif");
     background-position: center top;
     background-repeat: no-repeat;
     font-family: "メイリオ"!important;
@@ -407,7 +407,7 @@ function postLabelOut(){
 			console.log("updated")
 			//$('#output').html(data);
 			butttonLabelClear();
-			loadLabelDataServer("../"+projectName+"/label.csv?");
+			loadLabelDataServer(base_path+projectName+"/label.csv?");
 			removeLoading();
 		});
 }
