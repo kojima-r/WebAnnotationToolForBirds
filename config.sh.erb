@@ -1,8 +1,11 @@
-org_work=/export/kojima/WebAnnotationToolForBirds/RD150503_35_090530_work
-work=/export/kojima/WebAnnotationToolForBirds/test_geotf00_work
-main=/export/kojima/WebAnnotationToolForBirds
-project=test_geotf00
-target=audio/test_geotf00.wav
+base=$(cd $(dirname $0); pwd)
+
+org_work=$base/work
+work=$base/<%= config.name %>_work
+main=$base
+project=<%= config.name %>
+target=audio/<%= config.audio_name %>
+
 
 #textgrid=rd150503_35_090530_wav_species_corrected_merged_cleaned.TextGrid
 
