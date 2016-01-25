@@ -48,7 +48,8 @@ function zoomOut(){
 	thumbnailLoad();
 }
 var projectName;
-var base_path="/";
+var base_path="/"; //<%% rails base_path %%>
+var projectID=null; //<%% rails project_id %%>
 function setCanvasSize(w,h,sw){
 	//var canvas = document.getElementById("thumbnailDisplay");
 	//canvas.width = w;
@@ -83,6 +84,32 @@ function setCanvasSize(w,h,sw){
 	$('#viewLower').css("height",h);
 }
 
+function loadLabelConfig(callback){
+	if(projectID!=null){
+		$.get("/projects/"+projectID+"/list/labels", function(data){
+			for(var i=0;i<data.length;i++){
+				var label_name=data[i]["name"]
+				var input_tag='<input type="radio" name="label_selector_buttons" value="'+i+'" onChange="selectLabel('+i+');"';
+				if(i==0){
+					input_tag+=" checked"
+				}
+				input_tag+='>'+i+": "+label_name+writeMark(i)+'</input>';
+				$("#label_selector").append(input_tag);
+				callback();
+			}
+		});
+	}else{
+		for(var i=0;i<4;i++){
+			var input_tag='<input type="radio" name="label_selector_buttons" value="'+i+'" onChange="selectLabel('+i+');"';
+			if(i==0){
+				input_tag+=" checked"
+			}
+			input_tag+='>'+i+writeMark(i)+'</input>';
+			$("#label_selector").append(input_tag);
+		}
+		callback();
+	}
+}
 function drawSpectrogram(){
 	canvas_wav = document.getElementById("waveDisplay");
 	if ( ! canvas_wav || ! canvas_wav.getContext ) { return false; }
@@ -95,6 +122,7 @@ function drawSpectrogram(){
 	}
 }
 window.onload=function(){
+	loadLabelConfig(function (){
 	setInfoTagID("wavInfoArea");
 	SCALE_WIDTH=50
 	canvas = document.getElementById("scale1");
@@ -202,6 +230,7 @@ window.onload=function(){
 		
 	}
 	audioInitialize(base_path+projectName+"/original.wav");
+	});
 }
 var shiftDownFlag;
 var ctrlDownFlag;
@@ -319,6 +348,15 @@ height:30px;
 background-color:#ddd;
 z-index:10;
 }
+
+#label_selector{
+display:inline-block;
+}
+#user_info{
+display:inline-block;
+float: right;
+}
+
 #infoArea{
 	float:left;
 	width: 1000;
@@ -395,8 +433,12 @@ defaultLabel=0;
 lineTypeCol=['#0f0','#f00','#00f','#0ff','#ff0','#f0f','#080','#800','#008','#f80','#80f','#0f8'];
 lineTypeCol2=['#8f8','#f88','#88f','#8ff','#ff8','#f8f','#484','#844','#448','#f84','#84f','#4f8'];
 lineTypeNum=7;
+function initLabelSelector(){
+	
+}
 function writeMark(n){
-	document.write("<span style='color:"+lineTypeCol[n]+";'>*</span>")
+	//document.write("<span style='color:"+lineTypeCol[n]+";'>*</span>")
+	return "<span style='color:"+lineTypeCol[n]+";'>*</span>"
 }
 function postLabelOut(){
 	dispLoading("Operations Are In Progress ...");
@@ -421,8 +463,8 @@ function outLabelImage(){
 </head>
 
 <body>
-
 <div id="navi">
+
 	<select name="project" id="project" onChange="selectProject(null);">
 		<option value="sample">sample</option>
 		<option value="ieac">sample2</option>
@@ -431,31 +473,20 @@ function outLabelImage(){
 	<input type="button" value="play" onclick="butttonPlay()">
 	<input type="button" value="resume" onclick="butttonResume()">
 	<input type="button" value="clear label" onclick="butttonLabelClear()">
-	<input type="button" value="save label(HTML)" onclick="outLabelHTML(wavDuration)">
 	<input type="button" value="save label" onclick='buttonLabelOut()'>
+	<input type="button" value="save label(HTML)" onclick="outLabelHTML(wavDuration)">
 	<input type="button" value="save img" onclick='outLabelImage()'>
-	<input type="button" value="auto annotation" onclick='postLabelOut()'>
-	<input id="fileSelect" style="visibility:hidden;" type="file" />
-<input type="radio" name="l" value="0" onChange="selectLabel(0);" checked>0<script>writeMark(0)</script></script>
-<input type="radio" name="l" value="1" onChange="selectLabel(1);" checked>1<script>writeMark(1)</script></script>
-<input type="radio" name="l" value="2" onChange="selectLabel(2);" checked>2<script>writeMark(2)</script></script>
-<input type="radio" name="l" value="3" onChange="selectLabel(3);" checked>3<script>writeMark(3)</script></script>
-<input type="radio" name="l" value="4" onChange="selectLabel(4);" checked>4<script>writeMark(4)</script></script>
-<input type="radio" name="l" value="5" onChange="selectLabel(5);" checked>5<script>writeMark(5)</script></script>
-<input type="radio" name="l" value="6" onChange="selectLabel(6);" checked>6<script>writeMark(6)</script></script>
-<input type="radio" name="l" value="7" onChange="selectLabel(7);" checked>7<script>writeMark(7)</script></script>
-<input type="radio" name="l" value="8" onChange="selectLabel(8);" checked>8<script>writeMark(8)</script></script>
+	<div id="label_selector"></div>
 <!--
-<input type="radio" name="l" value="0" onChange="selectLabel(0);" checked>人の声<script>writeMark(0)</script>
-<input type="radio" name="l" value="1" onChange="selectLabel(1);">人の声（背景）<script>writeMark(1)</script>
-<input type="radio" name="l" value="2" onChange="selectLabel(2);">混ぜる<script>writeMark(2)</script>
-<input type="radio" name="l" value="3" onChange="selectLabel(3);">加熱<script>writeMark(3)</script>
-<input type="radio" name="l" value="4" onChange="selectLabel(null);">切る
+	<input type="button" value="auto annotation" onclick='postLabelOut()'>
 <select name="other" id="other" onChange="selectLabel(null);">
 <option value="5">人参</option>
 <option value="6">玉葱<span style="color:#f00;">+</span></option>
 </select>
 -->
+	<div id="user_info">
+		<!-- <%% rails user_info %%>  -->
+	</div>
 </div>
 <!--
 <div style="float: left;">
@@ -528,5 +559,6 @@ function outLabelImage(){
 
 -->
 </div>
+	<input id="fileSelect" style="visibility:hidden;" type="file" />
 </body>
 </html>
