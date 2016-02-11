@@ -86,7 +86,14 @@ function setCanvasSize(w,h,sw){
 
 function loadLabelConfig(callback){
 	if(projectID!=null){
+        // here is for rails
 		$.get("/projects/"+projectID+"/list/labels", function(data){
+			if(data.length==0){
+				//no labels
+                url="/projects/"+projectID+"/edit_labels"
+				location.href = url;
+                return;
+			}
 			for(var i=0;i<data.length;i++){
 				var label_name=data[i]["name"]
 				var input_tag='<input type="radio" name="label_selector_buttons" value="'+i+'" onChange="selectLabel('+i+');"';
@@ -216,14 +223,15 @@ window.onload=function(){
 		console.log(arr);
 		if(arr.length>0){
 			sep=arr[0][4];
+			basefilename="sep_"+sep+".wav"
 			filename=base_path+projectName+"/sep_files/sep_"+sep+".wav";
 			spec_filename=base_path+projectName+"/sep_files/sep_"+sep+".png";
-			console.log(base_path+projectName+"/sep_files/sep_"+sep+".wav");
-			playSoundFile(base_path+projectName+"/sep_files/sep_"+sep+".wav");
-			
+			console.log(filename);
+			//playSoundFile(filename);
 			
 			$("#evt_file").html(
-				"file name : "+filename+"<br>"
+				'file : <a href="'+filename+'">'+basefilename+"</a><br>"
+				+'<audio src="'+filename+'" controls/>'
 				);
 			$("#evt_spec").attr("src",spec_filename);
 		}
