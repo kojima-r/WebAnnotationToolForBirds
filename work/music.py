@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+import matplotlib
+matplotlib.use('Agg')
 import sys
 import numpy as np; np.random.seed(0)
 import seaborn as sns; sns.set()
