@@ -191,12 +191,13 @@ var AppAnnotation = (function () {
         $('#contents').css("width", w + sw);
     };
     AppAnnotation.prototype.loadLabelConfig = function (callback) {
+        var _this = this;
         if (this.projectID != null) {
             // here is for rails
             $.get("/projects/" + this.projectID + "/list/labels", function (data) {
                 if (data.length == 0) {
                     //no labels
-                    var url = "/projects/" + this.projectID + "/edit_labels";
+                    var url = "/projects/" + _this.projectID + "/edit_labels";
                     location.href = url;
                     return;
                 }
@@ -206,7 +207,7 @@ var AppAnnotation = (function () {
                     if (i == 0) {
                         input_tag += " checked";
                     }
-                    input_tag += '>' + i + ": " + label_name + this.writeMark(i) + '</input>';
+                    input_tag += '>' + i + ": " + label_name + _this.writeMark(i) + '</input>';
                     $("#label_selector").append(input_tag);
                     callback();
                 }

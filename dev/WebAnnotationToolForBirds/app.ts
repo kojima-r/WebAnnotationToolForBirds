@@ -87,7 +87,7 @@ class AppAnnotation{
     loadLabelConfig(callback) {
         if (this.projectID != null) {
             // here is for rails
-            $.get("/projects/" + this.projectID + "/list/labels", function (data) {
+            $.get("/projects/" + this.projectID + "/list/labels", (data)=> {
                 if (data.length == 0) {
                     //no labels
                     var url = "/projects/" + this.projectID + "/edit_labels"
