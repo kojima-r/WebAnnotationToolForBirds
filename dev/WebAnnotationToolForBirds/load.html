@@ -1,0 +1,199 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Web annotation tool</title>
+<script src="/util.js"></script>
+<script src="/common.js"></script>
+<script src="/label.js"></script>
+<script src="/audio.js"></script>
+<script src="/audio_play.js"></script>
+<script src="/graph.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+<script src="/jquery.gpfloat-1.0.min.js"></script>
+<script src="/jquery.balloon.js"></script>
+<script src="/app.js"></script>
+<script>
+    function selectLabel(x) {
+        app.selectLabel(x);
+    }
+</script>
+<style>
+body{
+margin: 0;
+padding-tom: 30px;
+}
+#viewport canvas {
+    position: absolute;
+}
+#viewLabel canvas {
+    position: absolute;
+}
+#navi{
+width:100%;
+position: fixed;
+height:30px;
+background-color:#ddd;
+z-index:10;
+}
+
+#label_selector{
+display:inline-block;
+}
+#user_info{
+display:inline-block;
+float: right;
+}
+
+#infoArea{
+	float:left;
+    width: 90%;
+    padding: 0px 0px 0px 0px;
+    margin:10 10 10 10;
+}
+#wavInfoArea{
+	float:left;
+	padding:10 10 10 10;
+	margin:10 10 10 10;
+	border: dashed 1px;
+	width: 100%;
+	position:relative;
+
+}
+#evtInfoArea{
+	float:left;
+	padding:10 10 10 10;
+	margin:10 10 10 10;
+	border: dashed 1px;
+    width: 100%; 
+	position:relative;
+}
+#evtInfoAreaSlide{
+	position:relative;
+	overflow-x: scroll;
+}
+#loading{
+    border:1px dashed #999;
+    padding:15px;
+    position: fixed;
+    top:50%;
+    left:50%;
+    background-color:#FFF;
+    filter: alpha(opacity=85);
+    -moz-opacity:0.85;
+    opacity:0.85;
+}
+ 
+#loading .loadingMsg{
+    text-align:center;
+    padding-top:100px;
+    width:100px;
+    background-image:url("/load.gif");
+    background-position: center top;
+    background-repeat: no-repeat;
+    font-family: "メイリオ"!important;
+}
+* {
+    box-sizing: border-box;
+}
+ 
+#selected_label{
+    position:absolute;
+    z-index:10;   
+}
+</style>
+</head>
+<body>
+<div id="navi">
+	<input type="button" value="stop" id="button_stop">
+	<input type="button" value="play" id="button_play">
+	<input type="button" value="clear label" id="button_clear_label">
+	<input type="button" value="save label" id="button_out_label">
+	
+	<div id="label_selector"></div>
+	<div id="user_info">
+		<!-- <%% rails user_info %%>  -->
+	</div>
+</div>
+<!--
+<div style="float: left;">
+	ここにwavファイルをドロップ。
+</div>
+-->
+
+<div id="contents" style="float: left;">
+	<!-- 
+	<canvas id="thumbnailDisplay" style="float: left;border: solid 1px; margin-top: 30px;"></canvas>
+	-->
+	<!-- Leftが上、Rightが下 -->
+	<div id="viewUpper" style="float: left; border: solid 1px;">
+		<div id="viewScale1" style="float: left;">
+			<canvas id="scale1" style="margin-top: 0px;background-color: transparent;"></canvas>
+		</div>
+		<div id="viewLabel" >
+			<canvas id="waveDisplayL2" style="margin-top: 0px;background-color: transparent;"></canvas>
+			<canvas id="waveDisplayL" style="margin-top: 0px;background-size:100% 100%;"></canvas>
+			<!--<canvas id="waveDisplayL" style="margin-top: 0px;background-color: transparent;"></canvas>-->
+		</div>
+	</div>
+	<div id="viewLower" style="float: left; border: solid 1px;">
+		<div id="viewScale2" style="float: left;">
+			<canvas id="scale2" style="margin-top: 0px;background-color: transparent;"></canvas>
+		</div>
+		<div id="viewport">
+			<canvas id="waveDisplay" style="clear: both;  margin-top: 0px;background-color: transparent;"></canvas>
+			<canvas id="waveDisplay2" style="clear: both; margin-top: 0px;background-color: transparent;"></canvas>
+		</div>
+	</div>
+</div>
+    <div id="selected_label">
+        selected
+    </div>
+<div id="infoAreaDummy" style="width:1000;float: left;"></div>
+<div id="infoArea">
+	<div id="evtInfoArea">
+		<div id="evt_file"></div>
+        <div id="evtInfoAreaSlide">
+            <img id="evt_spec"></img>
+        </div>
+    </div>
+	<div id="usage" style="width:100%;float: left;">
+	    <h3>Usage</h3>
+	    <ul>
+	    <li>left click: play sound</li>
+	    <li>right click: annotate a label</li>
+	    <li>middle click: change an annotated flag</li>
+	    <li>CTRL+left click: add a new label</li>
+	    <li>CTRL+right click: delete selected label</li>
+	    <li>CTRL+Middle DD : annotate labels in the selected range</li>
+	    </ul>
+	</div>
+    <div id="otherInfoSelector" style="width:100%;float: left;">
+        <span id="buttonWavInfoArea">wav info</span>
+        <span id="buttonSubFunction">sub function</span>
+    </div>
+    <div id="wavInfoArea"></div>
+    <div id="subFunction">
+        <input type="button" value="save label(HTML)" id="button_out_label_html">
+        <input type="button" value="save img" id="button_save_img">
+    </div>
+</div>
+    
+<img id="outImg" src=""></img>
+<div id="outLabel" style="float: left;clear: both; border: dashed 1px;width: 1000px;"></div>
+<!--
+	<h3>操作</h3>
+	<ul>
+	<li>左クリック：分離音再生</li>
+	<li>右クリック：ラベル変更</li>
+	<li>中クリック：アノテーション済みかどうかの<フラグ切り替え/li>
+	<li>CTRL+中ドラッグ：ラベル範囲変更</li>
+	<li>CTRL+左ドラッグ：ラベル追加</li>
+	<li>CTRL+右クリック：ラベル削除</li>
+</ul>
+-->
+
+</div>
+
+	<input id="fileSelect" style="visibility:hidden;" type="file" />
+</body>
+</html>

@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8"?><?asciidoc-toc?>
+<?asciidoc-numbered?>
+<book xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0" xml:lang="en">
+<info>
+<title>Web Annotation Tool 使い方</title>
+<date>2016-02-15</date>
+</info>
+<chapter xml:id="id_">
+<title>概要</title>
+<simpara>本ソフトウェアは、マイクロフォンアレイを用いて収録された音ファイルを解析し、空間的・時間的に存在する音イベントに対して、ユーザがWebベースで直観的にアノテーションを行うことを可能にする。</simpara>
+</chapter>
+<chapter xml:id="id__2">
+<title>機能</title>
+<itemizedlist>
+<listitem>
+<simpara>ユーザ管理・アノテーションプロジェクト管理　（本ソフトウェアでは、一つの音ファイルに対応するパラメータやアノテーションデータをまとめて「プロジェクト」という単位で管理する）</simpara>
+</listitem>
+<listitem>
+<simpara>マイクロフォンアレイを用いて収録されたwavファイルをアップロードし、HARK を用いてサーバ側で音源定位・音源分離を行う</simpara>
+</listitem>
+<listitem>
+<simpara>音源定位・分離におけるパラメータの設定</simpara>
+</listitem>
+<listitem>
+<simpara>アノテーションにおける以下の操作</simpara>
+<itemizedlist>
+<listitem>
+<simpara>音源定位・分離した音イベントの可視化</simpara>
+</listitem>
+<listitem>
+<simpara>アップロードした音ファイルの再生・スペクトログラム表示</simpara>
+</listitem>
+<listitem>
+<simpara>音源定位（MUSIC法）で用いたMUSICスペクトログラムの表示</simpara>
+</listitem>
+<listitem>
+<simpara>分離音の再生・スペクトログラム表示</simpara>
+</listitem>
+</itemizedlist>
+</listitem>
+</itemizedlist>
+</chapter>
+<chapter xml:id="id__3">
+<title>手順</title>
+<orderedlist numeration="arabic">
+<listitem>
+<simpara>ユーザ登録をする</simpara>
+</listitem>
+<listitem>
+<simpara>ログインし、プロジェクトを登録する</simpara>
+</listitem>
+<listitem>
+<simpara>ラベルを設定する</simpara>
+</listitem>
+<listitem>
+<simpara>アノテーション作業画面に移動し、アノテーションを行う</simpara>
+</listitem>
+<listitem>
+<simpara>アノテーションデータをダウンロードする</simpara>
+</listitem>
+</orderedlist>
+<section xml:id="id__4">
+<title>ユーザ登録</title>
+<simpara>まず、未ログインの状態で、以下のURLにアクセスすると下のようなログイン画面が開く。</simpara>
+<informalfigure>
+<mediaobject>
+<imageobject>
+<imagedata fileref="images/01login.png"/>
+</imageobject>
+<textobject><phrase>01login.png</phrase></textobject>
+</mediaobject>
+</informalfigure>
+<simpara>初めて使う場合は、ユーザ登録を行う必要がある。ユーザ登録を行うには「sign up」のリンクをクリックする。すると、以下のような画面が開く。</simpara>
+<informalfigure>
+<mediaobject>
+<imageobject>
+<imagedata fileref="images/02signup.png"/>
+</imageobject>
+<textobject><phrase>02signup.png</phrase></textobject>
+</mediaobject>
+</informalfigure>
+<simpara>必要項目を入力したら、「sign up」ボタンを押す。</simpara>
+<informalfigure>
+<mediaobject>
+<imageobject>
+<imagedata fileref="images/03signup.png"/>
+</imageobject>
+<textobject><phrase>03signup.png</phrase></textobject>
+</mediaobject>
+</informalfigure>
+<simpara>新しく登録すると、自動的にそのユーザでログインされた状態になる。</simpara>
+</section>
+<section xml:id="id__5">
+<title>プロジェクト作成</title>
+<simpara>ログインが完了すると、以下のような画面になる。下図の画面はプロジェクト管理画面ですが、新たなユーザでは、まだ何もプロジェクトが作成されていないため、このようなシンプルな画面になっています。</simpara>
+<informalfigure>
+<mediaobject>
+<imageobject>
+<imagedata fileref="images/04projects.png"/>
+</imageobject>
+<textobject><phrase>04projects.png</phrase></textobject>
+</mediaobject>
+</informalfigure>
+<simpara>次に、新たなプロジェクトを作成するためには、「New Project」
+リンクをクリックする。すると、以下のような画面が開くので、必要な項目を変更する。
+この時、「ファイルを選択」
+の部分からマイクロフォンアレイで収録したローカルの.wavファイルをアップロードすることができる。</simpara>
+<informalfigure>
+<mediaobject>
+<imageobject>
+<imagedata fileref="images/05project.png"/>
+</imageobject>
+<textobject><phrase>05project.png</phrase></textobject>
+</mediaobject>
+</informalfigure>
+<simpara>必要事項を入力後、「Create Project」ボタンを押して、プロジェクトを作成する。</simpara>
+<informalfigure>
+<mediaobject>
+<imageobject>
+<imagedata fileref="images/06project.png"/>
+</imageobject>
+<textobject><phrase>06project.png</phrase></textobject>
+</mediaobject>
+</informalfigure>
+<simpara>プロジェクトの作成が完了すると、以下のような画面が開く。ここで、アップロードした音ファイルの確認等ができる。問題なければ、「back」のリンクをクリックすると、プロジェクト管理画面に戻ることができる。</simpara>
+<informalfigure>
+<mediaobject>
+<imageobject>
+<imagedata fileref="images/07project.png"/>
+</imageobject>
+<textobject><phrase>07project.png</phrase></textobject>
+</mediaobject>
+</informalfigure>
+<simpara>プロジェクト管理画面に戻ると、以下のような画面になる。</simpara>
+<informalfigure>
+<mediaobject>
+<imageobject>
+<imagedata fileref="images/08projects.png"/>
+</imageobject>
+<textobject><phrase>08projects.png</phrase></textobject>
+</mediaobject>
+</informalfigure>
+<simpara>ここで「Status」の項目が「Pending」となっている場合、サーバでアップロードした音ファイルの解析処理を行っているため、処理が終わるまで待つ必要がある。解析が終わると、自動的に以下のようになる。</simpara>
+<informalfigure>
+<mediaobject>
+<imageobject>
+<imagedata fileref="images/09projects.png"/>
+</imageobject>
+<textobject><phrase>09projects.png</phrase></textobject>
+</mediaobject>
+</informalfigure>
+</section>
+<section xml:id="id__6">
+<title>ラベル</title>
+<simpara>プロジェクトの作成を完了した後、そのプロジェクトにアノテーションをするために
+ラベルデータを作成する必要がある。</simpara>
+<simpara>プロジェクト管理画面の「Annotation」リンクをクリックすると、まだアノテーションすべきラベル
+が用意されていないので以下のような画面になる。また、プロジェクト管理画面から「Label」のリンクをクリックしても以下の画面に移動することができる。</simpara>
+<informalfigure>
+<mediaobject>
+<imageobject>
+<imagedata fileref="images/10labels.png"/>
+</imageobject>
+<textobject><phrase>10labels.png</phrase></textobject>
+</mediaobject>
+</informalfigure>
+<simpara>右の「All labels」が全ラベルの一覧で、左の「Registered labels」がプロジェクトに登録されたファイルである。</simpara>
+<simpara>この画面では、「All labels」からプロジェクトに必要なラベルを選択し、「← Add」ボタンをおすことで、プロジェクトに必要なラベルを追加することができる。</simpara>
+<informalfigure>
+<mediaobject>
+<imageobject>
+<imagedata fileref="images/11labels.png"/>
+</imageobject>
+<textobject><phrase>11labels.png</phrase></textobject>
+</mediaobject>
+</informalfigure>
+<simpara>上図の状態で「← add」ボタンを押すと以下のようになることが確認できる。</simpara>
+<informalfigure>
+<mediaobject>
+<imageobject>
+<imagedata fileref="images/12labels.png"/>
+</imageobject>
+<textobject><phrase>12labels.png</phrase></textobject>
+</mediaobject>
+</informalfigure>
+<simpara>逆に、一度登録したものを削除したい場合は、以下のように、
+左の「Registered labels」から削除したいものを選択し、「→ Delete」ボタンを押します。</simpara>
+<informalfigure>
+<mediaobject>
+<imageobject>
+<imagedata fileref="images/13labels.png"/>
+</imageobject>
+<textobject><phrase>13labels.png</phrase></textobject>
+</mediaobject>
+</informalfigure>
+<simpara>上図の状態で「→ Delete」ボタンを押すと以下のようになることが確認できる。</simpara>
+<informalfigure>
+<mediaobject>
+<imageobject>
+<imagedata fileref="images/14labels.png"/>
+</imageobject>
+<textobject><phrase>14labels.png</phrase></textobject>
+</mediaobject>
+</informalfigure>
+</section>
+<section xml:id="id__7">
+<title>新規ラベル作成</title>
+<simpara>新たにラベルを作成するにはラベル編集画面から、「New Label」をクリックすると、以下のようなラベル新規作成画面が新たなタブとして開くので、必要な情報を入力し、「Create labels」ボタンをクリックする。</simpara>
+<informalfigure>
+<mediaobject>
+<imageobject>
+<imagedata fileref="images/15label.png"/>
+</imageobject>
+<textobject><phrase>15label.png</phrase></textobject>
+</mediaobject>
+</informalfigure>
+<simpara>ラベルの作成が成功すると以下のような表示になる。</simpara>
+<informalfigure>
+<mediaobject>
+<imageobject>
+<imagedata fileref="images/16label.png"/>
+</imageobject>
+<textobject><phrase>16label.png</phrase></textobject>
+</mediaobject>
+</informalfigure>
+<simpara>ラベルの新規作成後、ラベル登録画面を開いたままの場合、ブラウザの更新を行う必要がある。</simpara>
+<simpara>元のタブに戻り、更新を行うと以下のように新たにラベルが追加されていることがわかる。</simpara>
+<informalfigure>
+<mediaobject>
+<imageobject>
+<imagedata fileref="images/18labels.png"/>
+</imageobject>
+<textobject><phrase>18labels.png</phrase></textobject>
+</mediaobject>
+</informalfigure>
+<simpara>ラベル登録後は、「back」のリンクをクリックすることで、プロジェクト管理画面に戻ることができる。</simpara>
+</section>
+<section xml:id="id__8">
+<title>アノテーション</title>
+<simpara>ラベル登録後、プロジェクト管理画面から、「Annotation」をクリックすると、以下のようなアノテーション画面になる。</simpara>
+<informalfigure>
+<mediaobject>
+<imageobject>
+<imagedata fileref="images/01annotation.png"/>
+</imageobject>
+<textobject><phrase>01annotation.png</phrase></textobject>
+</mediaobject>
+</informalfigure>
+</section>
+</chapter>
+<chapter xml:id="id__9">
+<title>アノテーション時の機能説明</title>
+<informalfigure>
+<mediaobject>
+<imageobject>
+<imagedata fileref="images/03annotation.png"/>
+</imageobject>
+<textobject><phrase>03annotation.png</phrase></textobject>
+</mediaobject>
+</informalfigure>
+<section xml:id="id__10">
+<title>画面説明</title>
+<orderedlist numeration="arabic">
+<listitem>
+<simpara>stop : 再生中の音を停止する。</simpara>
+</listitem>
+<listitem>
+<simpara>play : 音を最初から再生する。</simpara>
+</listitem>
+<listitem>
+<simpara>resume :　音を停止した場所から再生する。</simpara>
+</listitem>
+<listitem>
+<simpara>clear label :　ラベルをすべて削除する。</simpara>
+</listitem>
+<listitem>
+<simpara>save label :ラベルファイル(.csv)をダウンロードする。</simpara>
+</listitem>
+<listitem>
+<simpara>このプロジェクトに登録されているラベル：
+アノテーションするラベルを選択する。＊の色が、アノテーション画面のラベルの色と対応している。</simpara>
+</listitem>
+<listitem>
+<simpara>アノテーション画面：
+縦軸：角度、横軸時間のタイムラインを表示している。</simpara>
+</listitem>
+<listitem>
+<simpara>音イベント：各音イベントはこのように表示される。ここをクリックすることでアノテーションを行う。</simpara>
+</listitem>
+<listitem>
+<simpara>音ファイル確認画面：元の音ファイルのスペクトログラムと現在の再生位置の表示をする。</simpara>
+</listitem>
+<listitem>
+<simpara>分離音：選択した音イベントの詳細、分離音の再生、スペクトログラム表示を行う。</simpara>
+</listitem>
+</orderedlist>
+<blockquote>
+<simpara>その他のボタンはテスト用です。一部は消えるかもしれません</simpara>
+</blockquote>
+</section>
+<section xml:id="id__11">
+<title>ラベルロード</title>
+<simpara>ローカルに保存されたラベルファイル(.csv)をロードする場合は以下の手順
+. 「clear label」ボタンを押し、現在編集中のラベルをすべてクリアする。
+. ダウンロードしたラベルを画面にドラッグアンドドロップする。</simpara>
+<blockquote>
+<simpara>いちいちクリアしなくてもいいようにするかもしれません。また、サーバ側にラベルは現在保存されないので、ブラウザを閉じたり、更新したりすると、アノテーション情報が消えるので注意してください</simpara>
+</blockquote>
+</section>
+<section xml:id="id__12">
+<title>ラベルファイル</title>
+<simpara>以下のフォーマットのcsv</simpara>
+<simpara>ラベルファイル形式</simpara>
+<screen>音イベントID,ラベル,時刻,方向,分離音ID,アノテーション済みフラグ（注：自動アノテーション時に使う）</screen>
+<simpara>注意事項</simpara>
+<orderedlist numeration="arabic">
+<listitem>
+<simpara>各行はソートされていない</simpara>
+</listitem>
+<listitem>
+<simpara>時刻の単位は「秒」</simpara>
+</listitem>
+<listitem>
+<simpara>方向は0-1で正規化「０＝１８０度、１＝－１８０度」</simpara>
+</listitem>
+<listitem>
+<simpara>分離音IDは分離音のファイル名sep_?.wavと一致</simpara>
+</listitem>
+</orderedlist>
+</section>
+<section xml:id="id__13">
+<title>マウス操作</title>
+<simpara>以下の操作はアノテーション画面内でのみ可能。</simpara>
+<itemizedlist>
+<listitem>
+<simpara>左クリック：音イベントの選択（これにより選択した音イベントの詳細が⑩に表示される）</simpara>
+</listitem>
+<listitem>
+<simpara>右クリック：現在選択されているラベルをアノテーションする。</simpara>
+</listitem>
+<listitem>
+<simpara>中クリック：アノテーション済みかどうかのフラグを立てる。
+（注：自動アノテーション時に使う）</simpara>
+</listitem>
+<listitem>
+<simpara>CTRLキー＋中クリック（ドラッグ＆ドロップ）：範囲内のラベルの一括アノテーション（注：テスト機能）</simpara>
+</listitem>
+</itemizedlist>
+<simpara>以下の操作は音イベントの定位情報（時空間的情報）を編集するので注意。</simpara>
+<itemizedlist>
+<listitem>
+<simpara>CTRLキー＋左クリック（ドラッグ＆ドロップ）：新たな音イベントの作成</simpara>
+</listitem>
+<listitem>
+<simpara>CTRLキー＋右クリック：音イベントの削除</simpara>
+</listitem>
+</itemizedlist>
+</section>
+</chapter>
+<chapter xml:id="id__14">
+<title>未実装機能</title>
+<section xml:id="id__15">
+<title>プロジェクト管理</title>
+<itemizedlist>
+<listitem>
+<simpara>アノテーション情報のサーバ側への保存</simpara>
+</listitem>
+<listitem>
+<simpara>ユーザ間でのプロジェクトの共有</simpara>
+</listitem>
+<listitem>
+<simpara>プロジェクト間での音ファイル共有</simpara>
+</listitem>
+<listitem>
+<simpara>伝達関数ファイルアップロード</simpara>
+</listitem>
+<listitem>
+<simpara>分離音の一括DL</simpara>
+</listitem>
+</itemizedlist>
+</section>
+<section xml:id="id__16">
+<title>アノテーション画面</title>
+<itemizedlist>
+<listitem>
+<simpara>undo/redo</simpara>
+</listitem>
+<listitem>
+<simpara>ラベルファイルの構造化</simpara>
+</listitem>
+</itemizedlist>
+</section>
+</chapter>
+</book>

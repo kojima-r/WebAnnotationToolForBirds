@@ -1,0 +1,6 @@
+c:\users\kojima\documents\visual studio 2015\Projects\WebAnnotationToolForBirds\WebAnnotationToolForBirds\bin\WebAnnotationToolForBirds.dll.config
+c:\users\kojima\documents\visual studio 2015\Projects\WebAnnotationToolForBirds\WebAnnotationToolForBirds\bin\WebAnnotationToolForBirds.dll
+c:\users\kojima\documents\visual studio 2015\Projects\WebAnnotationToolForBirds\WebAnnotationToolForBirds\bin\WebAnnotationToolForBirds.pdb
+c:\users\kojima\documents\visual studio 2015\Projects\WebAnnotationToolForBirds\WebAnnotationToolForBirds\obj\Debug\WebAnnotationToolForBirds.csprojResolveAssemblyReference.cache
+c:\users\kojima\documents\visual studio 2015\Projects\WebAnnotationToolForBirds\WebAnnotationToolForBirds\obj\Debug\WebAnnotationToolForBirds.dll
+c:\users\kojima\documents\visual studio 2015\Projects\WebAnnotationToolForBirds\WebAnnotationToolForBirds\obj\Debug\WebAnnotationToolForBirds.pdb
