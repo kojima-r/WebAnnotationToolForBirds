@@ -324,15 +324,7 @@ var AppAnnotation = (function () {
     };
     return AppAnnotation;
 })();
-var projectName;
-var base_path = "/"; //<%% rails base_path %%>
-var projectID = null; //<%% rails project_id %%>
 var app;
-window.onload = function () {
-    app = new AppAnnotation(projectName, base_path, projectID);
-    app.loadLabelConfig(app.callbackLoadingLabel);
-    app.onload();
-};
 var shiftDownFlag;
 var ctrlDownFlag;
 $(document).ready(function () {

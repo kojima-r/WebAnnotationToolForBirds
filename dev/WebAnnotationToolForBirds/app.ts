@@ -347,17 +347,8 @@ class AppAnnotation{
         });
     }
 }
-var projectName;
-var base_path = "/"; //<%% rails base_path %%>
-var projectID = null; //<%% rails project_id %%>
-
 
 var app: AppAnnotation;
-window.onload = ()=>{
-    app = new AppAnnotation(projectName, base_path, projectID);
-    app.loadLabelConfig(app.callbackLoadingLabel);
-    app.onload();
-}
 
 var shiftDownFlag;
 var ctrlDownFlag;
