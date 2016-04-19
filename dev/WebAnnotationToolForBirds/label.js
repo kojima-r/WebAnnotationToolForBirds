@@ -25,6 +25,7 @@ var LabelView = (function () {
         this.editMode = false;
         this.idCount = 0;
         this.labelSelectedCallback = null;
+        this.labelModifiededCallback = null;
         this.rectSelect = false;
         this.UNANNOTATED_SEG = 0;
         this.ANNOTATED_SEG = 1;
@@ -129,11 +130,18 @@ var LabelView = (function () {
     };
     LabelView.prototype.modifyLabel = function (id, l) {
         var len = this.lines.length - 1;
+        var old = null;
+        var changed = false;
         for (var i = len; i >= 0; i--) {
             if (this.lines[i].id == id) {
+                old = this.lines[i].label;
                 this.lines[i].label = l;
                 this.lines[i].annotationFlag = this.ANNOTATED_SEG;
+                changed = true;
             }
+        }
+        if (changed && this.labelModifiededCallback != null) {
+            this.labelModifiededCallback(id, old, l);
         }
     };
     LabelView.prototype.toggleAnnotationFlag = function (id) {
@@ -195,22 +203,17 @@ var LabelView = (function () {
                 }
             }
         }
-        //TODO:このフィルタの意味
-        points.filter(function (x, i, self) {
+        //unique
+        var unique_points = points.filter(function (x, i, self) {
             return self.indexOf(x) === i;
         });
-        return points;
+        return unique_points;
     };
     LabelView.prototype.modifyLabelRectPoint = function (sx, sy, ex, ey, l) {
         var list = this.findRectPoint(sx, sy, ex, ey);
-        var len = this.lines.length - 1;
-        for (var i = len; i >= 0; i--) {
-            for (var j = 0; j < list.length; j++) {
-                if (this.lines[i].id == list[j]) {
-                    this.lines[i].label = l;
-                    this.lines[i].annotationFlag = this.ANNOTATED_SEG;
-                }
-            }
+        console.log(list);
+        for (var j = 0; j < list.length; j++) {
+            this.modifyLabel(list[j], l);
         }
     };
     LabelView.prototype.addLine = function (sx, sy, ex, ey, l) {

@@ -41,7 +41,8 @@ class LabelView{
     lineTypeNum=3;
     editMode=false;
     idCount=0;
-    labelSelectedCallback=null
+    labelSelectedCallback = null;
+    labelModifiededCallback = null;
     rectSelect=false;
 
     UNANNOTATED_SEG=0
@@ -146,12 +147,20 @@ class LabelView{
     }
     modifyLabel(id,l){
         var len = this.lines.length - 1;
+        var old: number = null;
+        var changed = false;
 	    for(var i = len; i >= 0; i--){
             if (this.lines[i].id == id) {
+                old=this.lines[i].label;
                 this.lines[i].label = l;
                 this.lines[i].annotationFlag = this.ANNOTATED_SEG;
-		    }
-	    }
+                changed = true;
+            }
+        }
+        if (changed && this.labelModifiededCallback != null) {
+            this.labelModifiededCallback(id, old, l);
+        }
+
     }
     toggleAnnotationFlag(id){
         var len = this.lines.length - 1;
@@ -215,23 +224,18 @@ class LabelView{
 			    }
 		    }
         }
-        //TODO:このフィルタの意味
-	    points.filter(function (x, i, self) {
+        //unique
+	    var unique_points=points.filter(function (x, i, self) {
 		    return self.indexOf(x) === i;
 	    });
-	    return points;
+        return unique_points;
     }
 
     modifyLabelRectPoint(sx, sy, ex, ey, l) {
-        var list = this.findRectPoint(sx,sy,ex,ey)
-        var len = this.lines.length - 1;
-	    for(var i = len; i >= 0; i--){
-		    for(var j=0;j<list.length;j++){
-                if (this.lines[i].id == list[j]) {
-                    this.lines[i].label = l;
-                    this.lines[i].annotationFlag = this.ANNOTATED_SEG;
-			    }
-		    }
+        var list = this.findRectPoint(sx, sy, ex, ey)
+        console.log(list)
+        for (var j = 0; j < list.length; j++){
+            this.modifyLabel(list[j], l);
 	    }
     }
 

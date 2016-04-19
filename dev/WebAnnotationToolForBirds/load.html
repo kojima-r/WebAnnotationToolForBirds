@@ -12,6 +12,7 @@
 <script src="/jquery.gpfloat-1.0.min.js"></script>
 <script src="/jquery.balloon.js"></script>
 <script src="/app.js"></script>
+    <script src="/balloon_manager.js"></script>
 <script>
     function selectLabel(x) {
         app.selectLabel(x);
@@ -105,8 +106,7 @@ float: right;
 * {
     box-sizing: border-box;
 }
- 
-#selected_label{
+.label{
     position:absolute;
     z-index:10;   
 }
@@ -155,8 +155,8 @@ float: right;
 		</div>
 	</div>
 </div>
-    <div id="selected_label">
-        selected
+    <div id="labels">
+       
     </div>
 <div id="infoAreaDummy" style="width:1000;float: left;"></div>
 <div id="infoArea">

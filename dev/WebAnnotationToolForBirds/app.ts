@@ -1,18 +1,13 @@
-﻿/// <reference path="common.ts" />
-
-
-interface JQuery{
-    gpFloatY?(): any;
-    balloon?(options?: any): any;
-    showBalloon?(options?: any): any;
-    hideBalloon?(options?: any): any;
-}
+﻿/// <reference path="balloon_manager.ts" />
+/// <reference path="common.ts" />
 
 class AppAnnotation{
     commonInfo: AnnotaionCommon;
     projectName;
     base_path;
     projectID;
+    balloonManager: BaloonManager;
+
     constructor(projectName, base_path, projectID) {
         this.projectName = projectName;
         this.base_path = base_path;
@@ -281,8 +276,13 @@ class AppAnnotation{
             this.commonInfo.labelView.loadLabelDataServer(this.base_path + this.projectName + "/" + labelName + ".csv?")
             $("#waveDisplayL").css('background-image', 'url("' + this.base_path + this.projectName + '/music.png")');
         }
+        this.commonInfo.labelView.labelModifiededCallback = (i: number, old: number, label: number) => {
+            console.log("[called] labelModifiededCallback" + i + ":" + old + "->" + label);
+            var arr = this.commonInfo.labelView.findPoint(i);
+            this.balloonManager.deleteBalloon(arr[0].id);
+        }
         this.commonInfo.labelView.labelSelectedCallback = (i: number) => {
-            console.log("[called] labelSelectedCallback")
+            console.log("[called] labelSelectedCallback");
             var arr = this.commonInfo.labelView.findPoint(i);
             if (arr.length > 0) {
                 var sep = arr[0].sep_id;
@@ -299,15 +299,9 @@ class AppAnnotation{
                 $("#evt_spec").attr("src", spec_filename);
 
                 //balloon
-                var c = $("#waveDisplayL");
-                var pos = $("#waveDisplayL").offset();
-                console.log("[pos]", arr);
-                pos.left += arr[0].x;
-                pos.top += arr[0].y;
-                $('#selected_label').offset(pos);
-                arr[0].label
-                $('#selected_label').showBalloon({ contents: "testtest" });
-
+                if (null == this.balloonManager.addBalloon(arr[0].x, arr[0].y, arr[0].id, arr[0].label)) {
+                    this.balloonManager.deleteBalloon(arr[0].id);
+                }
                 //$('#selected_label').hideBalloon({ hideComplete: function () { $('#selected_label').showBalloon({ contents: "testtest" }); } });
                 
             }
@@ -345,6 +339,9 @@ class AppAnnotation{
         $('#buttonSubFunction').click(function () {
             $('#subFunction').slideToggle('fast');
         });
+        //
+        this.balloonManager = new BaloonManager($('#labels'), 100, $("#waveDisplayL").offset());
+        console.log(this.balloonManager);
     }
 }
 

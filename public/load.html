@@ -1,341 +1,31 @@
-
-<html>
+﻿<html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Web annotation tool</title>
+<script src="/util.js"></script>
+<script src="/common.js"></script>
 <script src="/label.js"></script>
 <script src="/audio.js"></script>
 <script src="/audio_play.js"></script>
 <script src="/graph.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
 <script src="/jquery.gpfloat-1.0.min.js"></script>
+<script src="/jquery.balloon.js"></script>
+<script src="/app.js"></script>
+    <script src="/balloon_manager.js"></script>
 <script>
-function getRequest(){
-	if(location.search.length > 1) {
-		var get = new Object();
-		var ret = location.search.substr(1).split('&');
-		for(var i = 0; i < ret.length; i++) {
-			var r = ret[i].split('=');
-			get[r[0]] = r[1];
-		}
-		return get;
-	}else{
-		return false;
-	}
-}
-
-function zoomIn(){
-	SCALE_WIDTH=50;
-	var canvas = document.getElementById("waveDisplayL");
-	CANVAS_WIDTH=canvas.width*1.5;
-	setCanvasSize(CANVAS_WIDTH,CANVAS_HEIGHT,SCALE_WIDTH);
-	normalizeLinePositionW(1.5);
-	updateLabelCanvas();
-	drawSpectrogram();
-	startLoadBinary();
-	thumbnailLoad();
-}
-function zoomOut(){
-	SCALE_WIDTH=50;
-	var canvas = document.getElementById("waveDisplayL");
-	CANVAS_WIDTH=canvas.width*2/3;
-	setCanvasSize(CANVAS_WIDTH,CANVAS_HEIGHT,SCALE_WIDTH);
-
-	normalizeLinePositionW(2/3);
-	updateLabelCanvas();
-	drawSpectrogram();
-	startLoadBinary();
-	thumbnailLoad();
-}
-var projectName;
-var base_path="/"; //<%% rails base_path %%>
-var projectID=null; //<%% rails project_id %%>
-function setCanvasSize(w,h,sw){
-	//var canvas = document.getElementById("thumbnailDisplay");
-	//canvas.width = w;
-	//canvas.height = h;
-	var canvas = document.getElementById("waveDisplay");
-	canvas.width = w;
-	canvas.height = h;
-	var canvas = document.getElementById("waveDisplay2");
-	canvas.width = w;
-	canvas.height = h;
-	canvas = document.getElementById("waveDisplayL");
-	canvas.width = w;
-	canvas.height = h;
-	canvas = document.getElementById("waveDisplayL2");
-	canvas.width = w;
-	canvas.height = h;
-	//
-	$('#viewLabel').width=w;
-	$('#viewLabel').height=h;
-	$('#viewport').width=w;
-	$('#viewport').height=h;
-	//
-	/*
-	$('#viewUpper').width=w+sw;
-	$('#viewUpper').height=h;
-	$('#viewLower').width=w+sw;
-	$('#viewLower').height=h;
-	*/
-	$('#viewUpper').css("width",w+sw);
-	$('#viewUpper').css("height",h);
-	$('#viewLower').css("width",w+sw);
-	$('#viewLower').css("height",h);
-}
-
-function loadLabelConfig(callback){
-	if(projectID!=null){
-        // here is for rails
-		$.get("/projects/"+projectID+"/list/labels", function(data){
-			if(data.length==0){
-				//no labels
-                url="/projects/"+projectID+"/edit_labels"
-				location.href = url;
-                return;
-			}
-			for(var i=0;i<data.length;i++){
-				var label_name=data[i]["name"]
-				var input_tag='<input type="radio" name="label_selector_buttons" value="'+i+'" onChange="selectLabel('+i+');"';
-				if(i==0){
-					input_tag+=" checked"
-				}
-				input_tag+='>'+i+": "+label_name+writeMark(i)+'</input>';
-				$("#label_selector").append(input_tag);
-				callback();
-			}
-		});
-	}else{
-		for(var i=0;i<4;i++){
-			var input_tag='<input type="radio" name="label_selector_buttons" value="'+i+'" onChange="selectLabel('+i+');"';
-			if(i==0){
-				input_tag+=" checked"
-			}
-			input_tag+='>'+i+writeMark(i)+'</input>';
-			$("#label_selector").append(input_tag);
-		}
-		callback();
-	}
-}
-function drawSpectrogram(){
-	canvas_wav = document.getElementById("waveDisplay");
-	if ( ! canvas_wav || ! canvas_wav.getContext ) { return false; }
-	var ctx = canvas_wav.getContext('2d');
-	var img = new Image();
-	img.src = base_path+projectName+"/specgram.png";
-	img.onload = function() {
-		h_space=40
-		ctx.drawImage(img, 0, h_space,CANVAS_WIDTH,CANVAS_HEIGHT-h_space);
-	}
-}
-window.onload=function(){
-	loadLabelConfig(function (){
-	setInfoTagID("wavInfoArea");
-	SCALE_WIDTH=50
-	canvas = document.getElementById("scale1");
-	canvas.width = SCALE_WIDTH;
-	canvas.height = CANVAS_HEIGHT;
-	canvas = document.getElementById("scale2");
-	canvas.width = SCALE_WIDTH;
-	canvas.height = CANVAS_HEIGHT;
-
-	setCanvasSize(CANVAS_WIDTH,CANVAS_HEIGHT,SCALE_WIDTH);
-	$('#contents').css("width",CANVAS_WIDTH);
-	$('#contents').css("padding-top",30);
-	//
-	$("#scale1").gpFloatY();
-	$("#scale1").css('z-index',1);
-	$("#scale2").gpFloatY();
-	$("#scale2").css('z-index',1);
-	$("#viewScale1").width(SCALE_WIDTH);
-	$("#viewScale1").height(CANVAS_HEIGHT);
-	$("#viewScale2").width(SCALE_WIDTH);
-	$("#viewScale2").height(CANVAS_HEIGHT);
-	//
-	$("#infoArea").gpFloatY();
-	$("#infoAreaDummy").height($("#infoArea").height()+300)
-	//
-	var get = getRequest();
-	projectName = get['project'];
-	if(!projectName){
-		projectName="sample"
-	}
-	labelName = get['label'];
-	if(!labelName){
-		labelName="label"
-	}
-	//スペクトログラム表示
-	drawSpectrogram();
-	//スペクトログラム縦軸表示
-	h_space=40
-	var freq = [] , max = 9;
-	for( var i=1; freq.push((max-i++)*1000) < max;);
-	ctx_scale2 = document.getElementById("scale2").getContext('2d');
-	hstep=(CANVAS_HEIGHT-h_space)/(freq.length-1)
-	//塗りつぶし
-	old_fs=ctx_scale2.fillStyle
-	ctx_scale2.fillStyle='#fff'
-	ctx_scale2.fillRect(0,0,SCALE_WIDTH,CANVAS_HEIGHT);
-	ctx_scale2.fillStyle=old_fs
-	//
-	for(var i=0;i<freq.length;i++){
-		ctx_scale2.fillText(freq[i],10,h_space+hstep*i);
-		ctx_scale2.SCALE_WIDTH
-		ctx_scale2.strokeStyle = '#000';
-		ctx_scale2.lineWidth = 1;
-		ctx_scale2.beginPath();
-		ctx_scale2.moveTo(SCALE_WIDTH-10,h_space+hstep*i);
-		ctx_scale2.lineTo(SCALE_WIDTH,h_space+hstep*i);
-		ctx_scale2.stroke()
-	}
-	//方向縦軸表示
-	h_space=40
-	var dirs = [-180,-135,-90,-45,0,45,90,135,180]
-	ctx_scale1 = document.getElementById("scale1").getContext('2d');
-	//塗りつぶし
-	old_fs=ctx_scale1.fillStyle;
-	ctx_scale1.fillStyle='#fff';
-	ctx_scale1.fillRect(0,0,SCALE_WIDTH,CANVAS_HEIGHT);
-	ctx_scale1.fillStyle=old_fs;
-	//
-	hstep=(CANVAS_HEIGHT)/(dirs.length-1)
-	hstep_text=(CANVAS_HEIGHT-10)/(dirs.length-1)
-	ctx_scale1.strokeStyle = '#000';
-	ctx_scale1.lineWidth = 1;
-	for(var i=0;i<dirs.length;i++){
-		ctx_scale1.fillText(dirs[i],15,CANVAS_HEIGHT-hstep_text*i);
-		ctx_scale1.beginPath();
-		ctx_scale1.moveTo(SCALE_WIDTH-10,hstep*i);
-		ctx_scale1.lineTo(SCALE_WIDTH,hstep*i);
-		ctx_scale1.stroke()
-	}
-	ctx_scale1.beginPath();
-	ctx_scale1.moveTo(SCALE_WIDTH,0);
-	ctx_scale1.lineTo(SCALE_WIDTH,CANVAS_HEIGHT);
-	ctx_scale1.stroke()
-	//
-	callbackAudioInfoLoaded=function(){
-		loadLabelDataServer(base_path+projectName+"/"+labelName+".csv?")
-		$("#waveDisplayL").css('background-image', 'url("'+base_path+projectName+'/music.png")');
-	}
-	labelSelectedCallback=function(i){
-		arr=findPoint(i);
-		console.log(arr);
-		if(arr.length>0){
-			sep=arr[0][4];
-			basefilename="sep_"+sep+".wav"
-			filename=base_path+projectName+"/sep_files/sep_"+sep+".wav";
-			spec_filename=base_path+projectName+"/sep_files/sep_"+sep+".png";
-			console.log(filename);
-			//playSoundFile(filename);
-			
-			$("#evt_file").html(
-				'file : <a href="'+filename+'">'+basefilename+"</a><br>"
-				+'<audio src="'+filename+'" controls/>'
-				);
-			$("#evt_spec").attr("src",spec_filename);
-		}
-		
-	}
-	audioInitialize(base_path+projectName+"/original.wav");
-	});
-}
-var shiftDownFlag;
-var ctrlDownFlag;
-$(document).ready(function(){
-	$(window).keydown(function(e){
-		if(e.keyCode==16){//shift
-			shiftDownFlag=true;
-		}else if(e.keyCode==187){//+
-			if(shiftDownFlag){
-				zoomIn();
-			}
-		}else if(e.keyCode==189){//-
-			if(shiftDownFlag){
-				zoomOut();
-			}
-		}else if(e.keyCode==17){//ctrl
-			ctrlDownFlag=true;
-			editMode=true;
-		}
-		
-	});
-	$(window).keyup(function(e){
-		if(e.keyCode==16){//shift
-			shiftDownFlag=false;
-		}else if(e.keyCode==17){//ctrl
-			ctrlDownFlag=false;
-			editMode=false;
-		}
-	});
-});
-thumbnailCanvasHeight=150
-thumbnailWidth=100
-thumbnailHeight=100
-thumbnailLineWidth=3
-thumbnailStep=100
-thumbnailLineColor="#f00"
-var thumbnailImage;
-var thumbnailData;
-function thumbnailLoad(){
-	var canvas = document.getElementById("thumbnailDisplay");
-	var ctx = canvas.getContext('2d');
-	loadThumbnailList("thumbnail/log.csv",function(thumbnailData){
-		//画像の表示間隔計算
-		var intervalMean=0;
-		for(var i=1;i<thumbnailData.length;i++){
-			intervalMean+=thumbnailData[i][0]-thumbnailData[i-1][0]
-		}
-		intervalMean/=(thumbnailData.length-1)
-		thumbnailStep=(intervalMean/1000.0/wavDuration)*CANVAS_WIDTH
-		//画像ロード
-		thumbnailImage=new Array(thumbnailData.length,null)
-		for(var i=0;i<thumbnailData.length;i++){
-			function f(j){
-				var pos_rate=thumbnailData[j][0]/1000.0/wavDuration
-				var img = new Image();
-				img.src = "thumbnail/"+thumbnailData[j][1]+"?" + new Date().getTime();
-				img.onload = function() {
-					ctx.drawImage(img, thumbnailStep*j, 0,thumbnailWidth,thumbnailHeight);
-					ctx.strokeStyle = thumbnailLineColor;
-					ctx.lineWidth = thumbnailLineWidth;
-					// 線分を描画
-					ctx.beginPath();
-					ctx.moveTo(thumbnailStep*j,thumbnailHeight);
-					ctx.lineTo(pos_rate*CANVAS_WIDTH,thumbnailCanvasHeight);
-					ctx.stroke();
-				}
-				thumbnailImage[j]=img
-			};
-			f(i);
-		}
-	});
-}
-callbackAudioInfoLoaded=function(){
-	console.log("init")
-	//thumbnailLoad();
-	//initializeGraph();
-}
-//サーバからロード（サーバ）
-function loadThumbnailList(path,callbackFunc) {
-	var oReq = new XMLHttpRequest();
-	oReq.open("GET", path, true);
-	oReq.responseType = "text";
-	oReq.onload = function (oEvent) {
-		list = oReq.responseText;
-		arr=list.split("\n");
-		thumbnailData=[]
-		for(var i=0;i<arr.length;i++){
-				v=arr[i].split(",");
-				if(v.length>=3){
-					thumbnailData.push([parseFloat(v[1]),v[2]]);
-				}
-		}
-		console.log(thumbnailData);
-		callbackFunc(thumbnailData);
-	};
-	oReq.send(null);
-}
+    function selectLabel(x) {
+        app.selectLabel(x);
+    }
+    var projectName;
+    var base_path = "/"; //<%% rails base_path %%>
+    var projectID = null; //<%% rails project_id %%>
+    var app;
+    window.onload = function () {
+        app = new AppAnnotation(projectName, base_path, projectID);
+        app.loadLabelConfig(app.callbackLoadingLabel);
+        app.onload();
+    };
 
 </script>
 <style>
@@ -367,22 +57,28 @@ float: right;
 
 #infoArea{
 	float:left;
-	width: 1000;
+    width: 90%;
+    padding: 0px 0px 0px 0px;
+    margin:10 10 10 10;
 }
 #wavInfoArea{
 	float:left;
 	padding:10 10 10 10;
 	margin:10 10 10 10;
 	border: dashed 1px;
-	width: 400px;
+	width: 100%;
 	position:relative;
+
 }
 #evtInfoArea{
 	float:left;
 	padding:10 10 10 10;
 	margin:10 10 10 10;
 	border: dashed 1px;
-	width: 400px;
+    width: 100%; 
+	position:relative;
+}
+#evtInfoAreaSlide{
 	position:relative;
 	overflow-x: scroll;
 }
@@ -407,91 +103,23 @@ float: right;
     background-repeat: no-repeat;
     font-family: "メイリオ"!important;
 }
+* {
+    box-sizing: border-box;
+}
+.label{
+    position:absolute;
+    z-index:10;   
+}
 </style>
-<script>
-// Loadingイメージ表示関数
-function dispLoading(msg){
-    // 画面表示メッセージ
-    var dispMsg = "";
- 
-    // 引数が空の場合は画像のみ
-    if( msg != "" ){
-        dispMsg = "<div class='loadingMsg'>" + msg + "</div>";
-    }
-    // ローディング画像が表示されていない場合のみ表示
-    if($("#loading").size() == 0){
-        $("body").append("<div id='loading'>" + dispMsg + "</div>");
-    }	
-}
- 
-// Loadingイメージ削除関数
-function removeLoading(){
-	$("#loading").remove();
-}
-function selectLabel(x){
-	if(x==null){
-		var obj = document.getElementById("other");
-		var index=obj.selectedIndex;
-		x=obj.options[index].value;
-	}
-	defaultLabel=x;
-	//console.log(x)
-}
-defaultLabel=0;
-lineTypeCol=['#0f0','#f00','#00f','#0ff','#ff0','#f0f','#080','#800','#008','#f80','#80f','#0f8'];
-lineTypeCol2=['#8f8','#f88','#88f','#8ff','#ff8','#f8f','#484','#844','#448','#f84','#84f','#4f8'];
-lineTypeNum=7;
-function initLabelSelector(){
-	
-}
-function writeMark(n){
-	//document.write("<span style='color:"+lineTypeCol[n]+";'>*</span>")
-	return "<span style='color:"+lineTypeCol[n]+";'>*</span>"
-}
-function postLabelOut(){
-	dispLoading("Operations Are In Progress ...");
-	res=getLabelCSV(wavDuration);
-	$.post('/upload_txt',
-		{'label':res},
-		function(data){//成功時のコールバック
-			console.log("updated")
-			//$('#output').html(data);
-			butttonLabelClear();
-			loadLabelDataServer(base_path+projectName+"/label.csv?");
-			removeLoading();
-		});
-}
-
-function outLabelImage(){
-	cvs = document.getElementById("waveDisplayL");
-	var dataUrl = cvs.toDataURL();
-  	document.getElementById("outImg").src = dataUrl;
-}
-</script>
 </head>
-
 <body>
 <div id="navi">
-
-	<select name="project" id="project" onChange="selectProject(null);">
-		<option value="sample">sample</option>
-		<option value="ieac">sample2</option>
-	</select>
-	<input type="button" value="stop" onclick="butttonStop()">
-	<input type="button" value="play" onclick="butttonPlay()">
-	<input type="button" value="resume" onclick="butttonResume()">
-	<input type="button" value="clear label" onclick="butttonLabelClear()">
-	<input type="button" value="save label" onclick='buttonLabelOut()'>
-	<input type="button" value="save label(HTML)" onclick="outLabelHTML(wavDuration)">
-	<input type="button" value="save img" onclick='outLabelImage()'>
+	<input type="button" value="stop" id="button_stop">
+	<input type="button" value="play" id="button_play">
+	<input type="button" value="clear label" id="button_clear_label">
+	<input type="button" value="save label" id="button_out_label">
+	
 	<div id="label_selector"></div>
-<!--
-	<input type="button" value="auto annotation" onclick='postLabelOut()'>
-<select name="other" id="other" onChange="selectLabel(null);">
-<option value="5">人参</option>
-<option value="6">玉葱<span style="color:#f00;">+</span></option>
-</select>
--->
 	<div id="user_info">
 		<!-- <%% rails user_info %%>  -->
 	</div>
@@ -527,34 +155,42 @@ function outLabelImage(){
 		</div>
 	</div>
 </div>
-<div id="infoAreaDummy" style="width:1000;float: left;">
-</div>
+    <div id="labels">
+       
+    </div>
+<div id="infoAreaDummy" style="width:1000;float: left;"></div>
 <div id="infoArea">
-	<div id="wavInfoArea" >
-	</div>
 	<div id="evtInfoArea">
-		<p id="evt_file"></p>
-		<img id="evt_spec"></img>
+		<div id="evt_file"></div>
+        <div id="evtInfoAreaSlide">
+            <img id="evt_spec"></img>
+        </div>
+    </div>
+	<div id="usage" style="width:100%;float: left;">
+	    <h3>Usage</h3>
+	    <ul>
+	    <li>left click: play sound</li>
+	    <li>right click: annotate a label</li>
+	    <li>middle click: change an annotated flag</li>
+	    <li>CTRL+left click: add a new label</li>
+	    <li>CTRL+right click: delete selected label</li>
+	    <li>CTRL+Middle DD : annotate labels in the selected range</li>
+	    </ul>
 	</div>
-	<div id="usage" style="float: left;">
-	<h3>Usage</h3>
-	<ul>
-	<li>left click: play sound</li>
-	<li>right click: annotate a label</li>
-	<li>middle click: change an annotated flag</li>
-	<li>CTRL+left click: add a new label</li>
-	<li>CTRL+right click: delete selected label</li>
-	<li>CTRL+Middle DD : annotate labels in the selected range</li>
-	</ul>
-	</div>
+    <div id="otherInfoSelector" style="width:100%;float: left;">
+        <span id="buttonWavInfoArea">wav info</span>
+        <span id="buttonSubFunction">sub function</span>
+    </div>
+    <div id="wavInfoArea"></div>
+    <div id="subFunction">
+        <input type="button" value="save label(HTML)" id="button_out_label_html">
+        <input type="button" value="save img" id="button_save_img">
+    </div>
 </div>
-
-
+    
 <img id="outImg" src=""></img>
-<div id="outLabel" style="float: left;clear: both; border: dashed 1px;width: 1000px;">
-</div>
-
-	<!--
+<div id="outLabel" style="float: left;clear: both; border: dashed 1px;width: 1000px;"></div>
+<!--
 	<h3>操作</h3>
 	<ul>
 	<li>左クリック：分離音再生</li>
@@ -564,9 +200,10 @@ function outLabelImage(){
 	<li>CTRL+左ドラッグ：ラベル追加</li>
 	<li>CTRL+右クリック：ラベル削除</li>
 </ul>
-
 -->
+
 </div>
+
 	<input id="fileSelect" style="visibility:hidden;" type="file" />
 </body>
 </html>
