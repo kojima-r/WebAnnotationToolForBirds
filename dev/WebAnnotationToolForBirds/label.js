@@ -56,10 +56,6 @@ var LabelView = (function () {
         var defaultSepID = 0;
         for (var i = 0; i < arr.length; i++) {
             var v = arr[i].split(",");
-            if (prevID != nowID) {
-                prevID = nowID;
-                this.idCount += 1;
-            }
             if (v.length == 2) {
                 var x = parseFloat(v[0]) / this.commonInfo.wavDuration * this.commonInfo.CANVAS_WIDTH;
                 var y = parseFloat(v[1]) * this.commonInfo.CANVAS_HEIGHT;
@@ -67,6 +63,10 @@ var LabelView = (function () {
             }
             else if (v.length > 2) {
                 nowID = parseInt(v[0]);
+                if (prevID != nowID) {
+                    prevID = nowID;
+                    this.idCount += 1;
+                }
                 if (v.length == 3) {
                     var x = parseFloat(v[1]) / this.commonInfo.wavDuration * this.commonInfo.CANVAS_WIDTH;
                     var y = parseFloat(v[2]) * this.commonInfo.CANVAS_HEIGHT;
@@ -184,6 +184,14 @@ var LabelView = (function () {
             }
         }
         return { event_id: ni, distance: nd };
+    };
+    LabelView.prototype.getFirstPoint = function (seg_id) {
+        for (var i = 0; i < this.lines.length; i++) {
+            if (this.lines[i].id == seg_id) {
+                return this.lines[i];
+            }
+        }
+        return null;
     };
     LabelView.prototype.findPoint = function (seg_id) {
         var points = [];

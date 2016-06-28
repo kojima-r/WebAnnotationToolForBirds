@@ -324,7 +324,7 @@ var AppAnnotation = (function () {
             $('#subFunction').slideToggle('fast');
         });
         //
-        this.balloonManager = new BaloonManager($('#labels'), 100, $("#waveDisplayL").offset());
+        this.balloonManager = new BaloonManager(this.commonInfo, $('#labels'), 100, $("#waveDisplayL").offset());
         console.log(this.balloonManager);
     };
     return AppAnnotation;

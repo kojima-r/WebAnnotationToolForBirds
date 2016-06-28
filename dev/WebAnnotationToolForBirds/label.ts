@@ -73,16 +73,17 @@ class LabelView{
         var defaultSepID=0;
 	    for(var i=0;i<arr.length;i++){
             var v = arr[i].split(",");
-            if (prevID != nowID) {
-                prevID = nowID;
-                this.idCount += 1;
-            }
+            
             if (v.length == 2) {//行：X,Y
                 var x = parseFloat(v[0]) / this.commonInfo.wavDuration * this.commonInfo.CANVAS_WIDTH;
                 var y = parseFloat(v[1]) * this.commonInfo.CANVAS_HEIGHT;
                 this.lines.push({ "id": this.idCount, "label": this.defaultLabel, "x": x, "y": y, "sep_id": defaultSepID, "annotationFlag": this.UNANNOTATED_SEG })
             } else if(v.length > 2){
                 nowID = parseInt(v[0]);
+                if (prevID != nowID) {
+                    prevID = nowID;
+                    this.idCount += 1;
+                }
                 if (v.length == 3) {//行：ID,X,Y
                     var x = parseFloat(v[1]) / this.commonInfo.wavDuration * this.commonInfo.CANVAS_WIDTH;
                     var y = parseFloat(v[2]) * this.commonInfo.CANVAS_HEIGHT;
@@ -204,7 +205,14 @@ class LabelView{
 	    }
         return { event_id: ni, distance: nd };
     }
-
+    getFirstPoint(seg_id): LabelPoint {
+        for (var i = 0; i < this.lines.length; i++) {
+            if (this.lines[i].id == seg_id) {
+                return this.lines[i]
+            }
+        }
+        return null;
+    }
     findPoint(seg_id): Array<LabelPoint> {
         var points: Array<LabelPoint> = [];
         for (var i = 0; i < this.lines.length; i++){
