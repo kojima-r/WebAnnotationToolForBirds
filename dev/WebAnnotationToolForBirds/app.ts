@@ -7,13 +7,19 @@ class AppAnnotation{
     base_path;
     projectID;
     balloonManager: BaloonManager;
+    lineTypeCol = ['#0f0', '#f00', '#00f', '#0ff', '#ff0', '#f0f', '#080', '#800', '#008', '#f80', '#80f', '#0f8'];
+    lineTypeCol2 = ['#8f8', '#f88', '#88f', '#8ff', '#ff8', '#f8f', '#484', '#844', '#448', '#f84', '#84f', '#4f8'];
+    lineTypeNum = 8;
 
     constructor(projectName, base_path, projectID) {
         this.projectName = projectName;
         this.base_path = base_path;
         this.projectID = projectID;
         this.commonInfo = new AnnotaionCommon();
-        var labelView=new LabelView(this.commonInfo);
+        var labelView = new LabelView(this.commonInfo);
+        labelView.lineTypeCol = this.lineTypeCol;
+        labelView.lineTypeCol2 = this.lineTypeCol2;
+        labelView.lineTypeNum = this.lineTypeNum;
         var audioView=new AudioView(this.commonInfo);
     }
     getRequest() {
@@ -153,9 +159,7 @@ class AppAnnotation{
     setEditMode(editMode) {
         this.commonInfo.labelView.editMode = editMode;
     }
-    lineTypeCol = ['#0f0', '#f00', '#00f', '#0ff', '#ff0', '#f0f', '#080', '#800', '#008', '#f80', '#80f', '#0f8'];
-    lineTypeCol2 = ['#8f8', '#f88', '#88f', '#8ff', '#ff8', '#f8f', '#484', '#844', '#448', '#f84', '#84f', '#4f8'];
-    lineTypeNum = 7;
+    
     initLabelSelector() {
 
     }

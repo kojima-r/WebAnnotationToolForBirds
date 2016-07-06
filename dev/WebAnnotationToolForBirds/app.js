@@ -5,7 +5,7 @@ var AppAnnotation = (function () {
         var _this = this;
         this.lineTypeCol = ['#0f0', '#f00', '#00f', '#0ff', '#ff0', '#f0f', '#080', '#800', '#008', '#f80', '#80f', '#0f8'];
         this.lineTypeCol2 = ['#8f8', '#f88', '#88f', '#8ff', '#ff8', '#f8f', '#484', '#844', '#448', '#f84', '#84f', '#4f8'];
-        this.lineTypeNum = 7;
+        this.lineTypeNum = 8;
         this.callbackLoadingLabel = function () {
             console.log("[called] callbackLoadingLabel");
             _this.commonInfo.audioView.setInfoTagID("wavInfoArea");
@@ -129,6 +129,9 @@ var AppAnnotation = (function () {
         this.projectID = projectID;
         this.commonInfo = new AnnotaionCommon();
         var labelView = new LabelView(this.commonInfo);
+        labelView.lineTypeCol = this.lineTypeCol;
+        labelView.lineTypeCol2 = this.lineTypeCol2;
+        labelView.lineTypeNum = this.lineTypeNum;
         var audioView = new AudioView(this.commonInfo);
     }
     AppAnnotation.prototype.getRequest = function () {
