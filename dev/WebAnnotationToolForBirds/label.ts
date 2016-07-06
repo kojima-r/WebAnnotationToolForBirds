@@ -108,6 +108,7 @@ class LabelView{
                     var y = parseFloat(v[3]) * this.commonInfo.CANVAS_HEIGHT;
                     var sepID = parseInt(v[4]);
                     var aflag = parseInt(v[5]);
+                    var l = parseInt(v[1]);
                     this.lines.push({ "id": this.idCount, "label": l, "x": x, "y": y, "sep_id": nowID, "annotationFlag": aflag });
                     //this.lines.push([nowID + this.idCount, parseInt(v[1]), x, y, nowID, aflag]);
                 }

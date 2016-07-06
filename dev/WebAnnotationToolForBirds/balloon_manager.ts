@@ -63,8 +63,8 @@ class BaloonManager {
             this.balloons[index].seg_id
             var lp: LabelPoint = this.commonInfo.labelView.getFirstPoint(this.balloons[index].seg_id);
             console.log(this.balloons[index].seg_id);
-            if (lp != null) {
-                $('#' + this.balloons[index].html_id).showBalloon({ contents: "<p><img src=\"img/" + lp.label.toString() + ".jpg\" width=100 height=100></p>" });
+            if (lp != null && lp.label!=null) {
+                $('#' + this.balloons[index].html_id).showBalloon({ contents: "<p>" + lp.label.toString()+"<br><img src=\"img/" + lp.label.toString() + ".jpg\" width=100 height=100></p>" });
             }
             this.balloons[index].empty = false;
             this.balloons[index].seg_id = seg_id;
