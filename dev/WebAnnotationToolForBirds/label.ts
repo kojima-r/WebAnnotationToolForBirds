@@ -176,6 +176,12 @@ class LabelView{
 		    }
 	    }
     }
+    setAllAnnotationFlag(flag: number) {
+        var len = this.lines.length - 1;
+        for (var i = len; i >= 0; i--) {
+            this.lines[i].annotationFlag = flag;
+        }
+    }
     modifyLabelSucc(id){
         var len = this.lines.length - 1;
         for (var i = len; i >= 0; i--){

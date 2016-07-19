@@ -319,6 +319,9 @@ var AppAnnotation = (function () {
         $("#button_save_img").click(function () {
             _this.outLabelImage();
         });
+        $("#button_annotated_flag").click(function () {
+            _this.commonInfo.labelView.setAllAnnotationFlag(_this.commonInfo.labelView.ANNOTATED_SEG);
+        });
         //
         $('#buttonWavInfoArea').click(function () {
             $('#wavInfoArea').slideToggle('fast');

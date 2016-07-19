@@ -158,6 +158,12 @@ var LabelView = (function () {
             }
         }
     };
+    LabelView.prototype.setAllAnnotationFlag = function (flag) {
+        var len = this.lines.length - 1;
+        for (var i = len; i >= 0; i--) {
+            this.lines[i].annotationFlag = flag;
+        }
+    };
     LabelView.prototype.modifyLabelSucc = function (id) {
         var len = this.lines.length - 1;
         for (var i = len; i >= 0; i--) {

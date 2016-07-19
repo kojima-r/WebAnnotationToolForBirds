@@ -335,7 +335,9 @@ class AppAnnotation{
         $("#button_save_img").click(() => {
             this.outLabelImage();
         });
-        
+        $("#button_annotated_flag").click(() => {
+            this.commonInfo.labelView.setAllAnnotationFlag(this.commonInfo.labelView.ANNOTATED_SEG);
+        });
         //
         $('#buttonWavInfoArea').click(function () {
             $('#wavInfoArea').slideToggle('fast');
