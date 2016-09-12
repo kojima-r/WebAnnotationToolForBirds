@@ -3,6 +3,7 @@
 var AppAnnotation = (function () {
     function AppAnnotation(projectName, base_path, projectID) {
         var _this = this;
+        this.defaultLabelSelectorNum = 12;
         this.lineTypeCol = ['#0f0', '#f00', '#00f', '#0ff', '#ff0', '#f0f', '#080', '#800', '#008', '#f80', '#80f', '#0f8'];
         this.lineTypeCol2 = ['#8f8', '#f88', '#88f', '#8ff', '#ff8', '#f8f', '#484', '#844', '#448', '#f84', '#84f', '#4f8'];
         this.lineTypeNum = 8;
@@ -29,8 +30,8 @@ var AppAnnotation = (function () {
             $("#viewScale2").width(SCALE_WIDTH);
             $("#viewScale2").height(_this.commonInfo.CANVAS_HEIGHT);
             //
-            $("#infoArea").gpFloatY();
-            $("#infoAreaDummy").height($("#infoArea").height() + 1000);
+            //$("#infoArea").gpFloatY();
+            //$("#infoAreaDummy").height($("#infoArea").height() + 1000)
             //
             var get = _this.getRequest();
             _this.projectName = get['project'];
@@ -218,7 +219,7 @@ var AppAnnotation = (function () {
             });
         }
         else {
-            for (var i = 0; i < 4; i++) {
+            for (var i = 0; i < this.defaultLabelSelectorNum; i++) {
                 var input_tag = '<input type="radio" name="label_selector_buttons" value="' + i + '" onChange="selectLabel(' + i + ');"';
                 if (i == 0) {
                     input_tag += " checked";
@@ -298,6 +299,10 @@ var AppAnnotation = (function () {
     };
     AppAnnotation.prototype.onload = function () {
         var _this = this;
+        $(window).scroll(function () {
+            console.log($(window).scrollLeft());
+            $("#infoArea").css("margin-left", 10 + $(window).scrollLeft());
+        });
         $("#button_stop").click(function () {
             console.log("stop");
             _this.commonInfo.audioView.butttonStop();
@@ -321,6 +326,14 @@ var AppAnnotation = (function () {
         });
         $("#button_annotated_flag").click(function () {
             _this.commonInfo.labelView.setAllAnnotationFlag(_this.commonInfo.labelView.ANNOTATED_SEG);
+        });
+        $("#button_spec_flag").click(function () {
+            $('#viewLower').slideToggle('fast', function () {
+                //var y = $("#contents").position().top + $("#contents").height();
+                //console.log(y);
+                //$("#infoArea").position().top = $("#contents").position().top + $("#contents").height();
+                //$("#infoArea").gpFloatY();
+            });
         });
         //
         $('#buttonWavInfoArea').click(function () {

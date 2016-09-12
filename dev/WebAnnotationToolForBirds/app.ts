@@ -7,6 +7,7 @@ class AppAnnotation{
     base_path;
     projectID;
     balloonManager: BaloonManager;
+    defaultLabelSelectorNum = 12;
     lineTypeCol = ['#0f0', '#f00', '#00f', '#0ff', '#ff0', '#f0f', '#080', '#800', '#008', '#f80', '#80f', '#0f8'];
     lineTypeCol2 = ['#8f8', '#f88', '#88f', '#8ff', '#ff8', '#f8f', '#484', '#844', '#448', '#f84', '#84f', '#4f8'];
     lineTypeNum = 8;
@@ -107,7 +108,8 @@ class AppAnnotation{
                 }
             });
         } else {
-            for (var i = 0; i < 4; i++) {
+            
+            for (var i = 0; i < this.defaultLabelSelectorNum; i++) {
                 var input_tag = '<input type="radio" name="label_selector_buttons" value="' + i + '" onChange="selectLabel(' + i + ');"';
                 if (i == 0) {
                     input_tag += " checked"
@@ -211,8 +213,8 @@ class AppAnnotation{
         $("#viewScale2").width(SCALE_WIDTH);
         $("#viewScale2").height(this.commonInfo.CANVAS_HEIGHT);
         //
-        $("#infoArea").gpFloatY();
-        $("#infoAreaDummy").height($("#infoArea").height() + 1000)
+        //$("#infoArea").gpFloatY();
+        //$("#infoAreaDummy").height($("#infoArea").height() + 1000)
         //
         var get = this.getRequest();
         this.projectName = get['project'];
@@ -314,6 +316,11 @@ class AppAnnotation{
         this.commonInfo.audioView.audioInitialize(this.base_path + this.projectName + "/original.wav",null);
     }
     onload() {
+        $(window).scroll(() => {
+
+            console.log($(window).scrollLeft());
+            $("#infoArea").css("margin-left",10+$(window).scrollLeft());
+        });
         $("#button_stop").click(() => {
             console.log("stop");
             this.commonInfo.audioView.butttonStop();
@@ -337,6 +344,14 @@ class AppAnnotation{
         });
         $("#button_annotated_flag").click(() => {
             this.commonInfo.labelView.setAllAnnotationFlag(this.commonInfo.labelView.ANNOTATED_SEG);
+        });
+        $("#button_spec_flag").click(() => {
+            $('#viewLower').slideToggle('fast', () => {
+                //var y = $("#contents").position().top + $("#contents").height();
+                //console.log(y);
+                //$("#infoArea").position().top = $("#contents").position().top + $("#contents").height();
+                //$("#infoArea").gpFloatY();
+            });
         });
         //
         $('#buttonWavInfoArea').click(function () {
