@@ -65,7 +65,12 @@ class LabelView{
         };
 	    oReq.send(null);
     }
-
+    pixel2time(pt) {
+        return pt* this.commonInfo.wavDuration / this.commonInfo.CANVAS_WIDTH;
+    }
+    pixel2deg(pt) {
+        return 180 - pt / this.commonInfo.CANVAS_HEIGHT * 360.0;
+    }
     parseCSVLines(text) {
 	    var arr=text.split("\n");
 	    var prevID=null

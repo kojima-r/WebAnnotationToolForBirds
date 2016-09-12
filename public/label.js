@@ -49,6 +49,12 @@ var LabelView = (function () {
         };
         oReq.send(null);
     };
+    LabelView.prototype.pixel2time = function (pt) {
+        return pt * this.commonInfo.wavDuration / this.commonInfo.CANVAS_WIDTH;
+    };
+    LabelView.prototype.pixel2deg = function (pt) {
+        return 180 - pt / this.commonInfo.CANVAS_HEIGHT * 360.0;
+    };
     LabelView.prototype.parseCSVLines = function (text) {
         var arr = text.split("\n");
         var prevID = null;

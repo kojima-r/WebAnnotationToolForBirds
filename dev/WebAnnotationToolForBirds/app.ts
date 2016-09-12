@@ -287,11 +287,31 @@ class AppAnnotation{
             var arr = this.commonInfo.labelView.findPoint(i);
             this.balloonManager.deleteBalloon(arr[0].id);
         }
+        //イベントが選択された時の詳細表示
         this.commonInfo.labelView.labelSelectedCallback = (i: number) => {
             console.log("[called] labelSelectedCallback");
             var arr = this.commonInfo.labelView.findPoint(i);
             if (arr.length > 0) {
                 var sep = arr[0].sep_id;
+                var label = arr[0].label;
+                var x_min = arr[0].x;
+                var x_max = arr[0].x;
+                var y_min = arr[0].y;
+                var y_max = arr[0].y;
+                for (var i = 0; i < arr.length; i++) {
+                    if (x_min > arr[i].x) {
+                        x_min = arr[i].x;
+                    }
+                    if (x_max < arr[i].x) {
+                        x_max = arr[i].x;
+                    }
+                    if (y_min > arr[i].y) {
+                        y_min = arr[i].y;
+                    }
+                    if (y_max < arr[i].y) {
+                        y_max = arr[i].y;
+                    }
+                }
                 var basefilename = "sep_" + sep + ".wav"
                 var filename = this.base_path + this.projectName + "/sep_files/sep_" + sep + ".wav";
                 var spec_filename = this.base_path + this.projectName + "/sep_files/sep_" + sep + ".png";
@@ -299,7 +319,10 @@ class AppAnnotation{
                 //playSoundFile(filename);
 			
                 $("#evt_file").html(
-                    'file : <a href="' + filename + '">' + basefilename + "</a><br>"
+                    'file : <a href="' + filename + '">' + basefilename + "</a>  "
+                    + "label : " + label.toString() + " "
+                    + "time (sec)  : " + this.commonInfo.labelView.pixel2time(x_min).toFixed(3).toString() + "-" + this.commonInfo.labelView.pixel2time(x_max).toFixed(3).toString() + " "
+                    + "angle (deg) : " + this.commonInfo.labelView.pixel2deg(y_min).toFixed(3).toString() + "-" + this.commonInfo.labelView.pixel2deg(y_max).toFixed(3).toString() + "<br>"
                     + '<audio src="' + filename + '" controls/>'
                 );
                 $("#evt_spec").attr("src", spec_filename);
