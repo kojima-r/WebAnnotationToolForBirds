@@ -8,7 +8,9 @@
 <script src="/audio.js"></script>
 <script src="/audio_play.js"></script>
 <script src="/graph.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.0/themes/base/jquery-ui.css" />
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
 <script src="/jquery.gpfloat-1.0.min.js"></script>
 <script src="/jquery.balloon.js"></script>
 <script src="/app.js"></script>
@@ -46,9 +48,17 @@ height:30px;
 background-color:#ddd;
 z-index:10;
 }
-
+#navi_buttons{
+    position: fixed;
+display:inline-block;
+}
 #label_selector{
 display:inline-block;
+border:1px dashed #999;
+padding: 0.1em;
+}
+#label_selector li{
+    list-style:none;
 }
 #user_info{
 display:inline-block;
@@ -114,12 +124,13 @@ float: right;
 </head>
 <body>
 <div id="navi">
-	<input type="button" value="stop" id="button_stop">
-	<input type="button" value="play" id="button_play">
-	<input type="button" value="clear label" id="button_clear_label">
-	<input type="button" value="save label" id="button_out_label">
-	
-	<div id="label_selector"></div>
+    <div id="navi_buttons">
+        <input type="button" value="stop" id="button_stop">
+        <input type="button" value="play" id="button_play">
+        <input type="button" value="clear label" id="button_clear_label">
+        <input type="button" value="save label" id="button_out_label">
+    </div>
+	<div id="label_selector" class="ui-widget-content"></div>
 	<div id="user_info">
 		<!-- <%% rails user_info %%>  -->
 	</div>

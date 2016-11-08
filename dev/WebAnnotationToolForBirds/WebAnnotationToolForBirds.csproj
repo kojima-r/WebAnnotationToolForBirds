@@ -36,6 +36,7 @@
     <Content Include="load.gif" />
     <Content Include="load.html" />
     <Content Include="web.config" />
+    <TypeScriptCompile Include="Scripts\typings\jqueryui\jqueryui.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="util.ts" />
   </ItemGroup>

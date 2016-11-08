@@ -33,15 +33,6 @@ var AppAnnotation = (function () {
             //$("#infoArea").gpFloatY();
             //$("#infoAreaDummy").height($("#infoArea").height() + 1000)
             //
-            var get = _this.getRequest();
-            _this.projectName = get['project'];
-            if (!_this.projectName) {
-                _this.projectName = "sample";
-            }
-            var labelName = get['label'];
-            if (!labelName) {
-                labelName = "label";
-            }
             //スペクトログラム表示
             _this.drawSpectrogram();
             //スペクトログラム縦軸表示
@@ -96,7 +87,7 @@ var AppAnnotation = (function () {
             //
             _this.commonInfo.audioView.callbackAudioInfoLoaded = function () {
                 console.log("[called] AudioInfoLoaded");
-                _this.commonInfo.labelView.loadLabelDataServer(_this.base_path + _this.projectName + "/" + labelName + ".csv?");
+                _this.commonInfo.labelView.loadLabelDataServer(_this.base_path + _this.projectName + "/" + _this.labelName + ".csv?");
                 $("#waveDisplayL").css('background-image', 'url("' + _this.base_path + _this.projectName + '/music.png")');
             };
             _this.commonInfo.labelView.labelModifiededCallback = function (i, old, label) {
@@ -148,7 +139,20 @@ var AppAnnotation = (function () {
             };
             _this.commonInfo.audioView.audioInitialize(_this.base_path + _this.projectName + "/original.wav", null);
         };
-        this.projectName = projectName;
+        var get = this.getRequest();
+        if (projectName) {
+            this.projectName = projectName;
+        }
+        else {
+            this.projectName = get['project'];
+            if (!this.projectName) {
+                this.projectName = "sample";
+            }
+        }
+        this.labelName = get['label'];
+        if (!this.labelName) {
+            this.labelName = "label";
+        }
         this.base_path = base_path;
         this.projectID = projectID;
         this.commonInfo = new AnnotaionCommon();
@@ -235,22 +239,45 @@ var AppAnnotation = (function () {
                     if (i == 0) {
                         input_tag += " checked";
                     }
-                    input_tag += '>' + i + ": " + label_name + _this.writeMark(i) + '</input>';
+                    input_tag += '>' + i + ": " + label_name + _this.writeMark(i % _this.defaultLabelSelectorNum) + '</input>';
                     $("#label_selector").append(input_tag);
                     callback();
                 }
             });
         }
         else {
-            for (var i = 0; i < this.defaultLabelSelectorNum; i++) {
-                var input_tag = '<input type="radio" name="label_selector_buttons" value="' + i + '" onChange="selectLabel(' + i + ');"';
-                if (i == 0) {
-                    input_tag += " checked";
+            $.get(this.base_path + this.projectName + "/label_mapping.json?", function (data) {
+                console.log(data);
+                if (data.length == 0) {
                 }
-                input_tag += '>' + i + this.writeMark(i) + '</input>';
-                $("#label_selector").append(input_tag);
-            }
-            callback();
+                else {
+                    $("#label_selector").append("<ul>");
+                    for (var i = 0; i < data.length; i++) {
+                        var label_name = data[i]["name"];
+                        var input_tag = '<li><input type="radio" name="label_selector_buttons" value="' + i + '" onChange="selectLabel(' + i + ');"';
+                        if (i == 0) {
+                            input_tag += " checked";
+                        }
+                        input_tag += '>' + _this.writeMark(i % _this.defaultLabelSelectorNum) + label_name + '</input></li>';
+                        $("#label_selector").append(input_tag);
+                    }
+                    $("#label_selector").append("</ul>");
+                    callback();
+                }
+            }).fail(function () {
+                //no labels
+                $("#label_selector").append("<ul>");
+                for (var i = 0; i < _this.defaultLabelSelectorNum; i++) {
+                    var input_tag = '<li><input type="radio" name="label_selector_buttons" value="' + i + '" onChange="selectLabel(' + i + ');"';
+                    if (i == 0) {
+                        input_tag += " checked";
+                    }
+                    input_tag += '>' + i + _this.writeMark(i) + '</input></li>';
+                    $("#label_selector").append(input_tag);
+                }
+                $("#label_selector").append("</ul>");
+                callback();
+            });
         }
     };
     AppAnnotation.prototype.drawSpectrogram = function () {
@@ -365,6 +392,9 @@ var AppAnnotation = (function () {
         $('#buttonSubFunction').click(function () {
             $('#subFunction').slideToggle('fast');
         });
+        //
+        $("#label_selector").draggable();
+        $("#label_selector").resizable();
         //
         this.balloonManager = new BaloonManager(this.commonInfo, $('#labels'), 100, $("#waveDisplayL").offset());
         console.log(this.balloonManager);

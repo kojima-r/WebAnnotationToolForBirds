@@ -4,6 +4,7 @@
 class AppAnnotation{
     commonInfo: AnnotaionCommon;
     projectName;
+    labelName;
     base_path;
     projectID;
     balloonManager: BaloonManager;
@@ -13,7 +14,19 @@ class AppAnnotation{
     lineTypeNum = 8;
 
     constructor(projectName, base_path, projectID) {
-        this.projectName = projectName;
+        var get = this.getRequest();
+        if (projectName) {
+            this.projectName = projectName;
+        } else {
+            this.projectName = get['project'];
+            if (!this.projectName) {
+                this.projectName = "sample"
+            }
+        }
+        this.labelName = get['label'];
+        if (!this.labelName) {
+            this.labelName = "label"
+        }
         this.base_path = base_path;
         this.projectID = projectID;
         this.commonInfo = new AnnotaionCommon();
@@ -102,22 +115,44 @@ class AppAnnotation{
                     if (i == 0) {
                         input_tag += " checked"
                     }
-                    input_tag += '>' + i + ": " + label_name + this.writeMark(i) + '</input>';
+                    input_tag += '>' + i + ": " + label_name + this.writeMark(i % this.defaultLabelSelectorNum) + '</input>';
                     $("#label_selector").append(input_tag);
                     callback();
                 }
             });
         } else {
-            
-            for (var i = 0; i < this.defaultLabelSelectorNum; i++) {
-                var input_tag = '<input type="radio" name="label_selector_buttons" value="' + i + '" onChange="selectLabel(' + i + ');"';
-                if (i == 0) {
-                    input_tag += " checked"
+            $.get(this.base_path + this.projectName + "/label_mapping.json?", (data) => {
+                console.log(data);
+                if (data.length == 0) {
+                    
+                } else {
+                    $("#label_selector").append("<ul>");
+                    for (var i = 0; i < data.length; i++) {
+                        var label_name = data[i]["name"]
+                        var input_tag = '<li><input type="radio" name="label_selector_buttons" value="' + i + '" onChange="selectLabel(' + i + ');"';
+                        if (i == 0) {
+                            input_tag += " checked"
+                        }
+                        input_tag += '>' + this.writeMark(i % this.defaultLabelSelectorNum) +label_name +  '</input></li>';
+                        $("#label_selector").append(input_tag);
+                    }
+                    $("#label_selector").append("</ul>");
+                    callback();
                 }
-                input_tag += '>' + i + this.writeMark(i) + '</input>';
-                $("#label_selector").append(input_tag);
-            }
-            callback();
+            }).fail(() => {
+                //no labels
+                $("#label_selector").append("<ul>");
+                for (var i = 0; i < this.defaultLabelSelectorNum; i++) {
+                    var input_tag = '<li><input type="radio" name="label_selector_buttons" value="' + i + '" onChange="selectLabel(' + i + ');"';
+                    if (i == 0) {
+                        input_tag += " checked"
+                    }
+                    input_tag += '>' + i + this.writeMark(i) + '</input></li>';
+                    $("#label_selector").append(input_tag);
+                }
+                $("#label_selector").append("</ul>");
+                callback();
+                });
         }
     }
     drawSpectrogram() {
@@ -216,15 +251,7 @@ class AppAnnotation{
         //$("#infoArea").gpFloatY();
         //$("#infoAreaDummy").height($("#infoArea").height() + 1000)
         //
-        var get = this.getRequest();
-        this.projectName = get['project'];
-        if (!this.projectName) {
-            this.projectName = "sample"
-        }
-        var labelName = get['label'];
-        if (!labelName) {
-            labelName = "label"
-        }
+        
         //スペクトログラム表示
         this.drawSpectrogram();
         //スペクトログラム縦軸表示
@@ -279,7 +306,7 @@ class AppAnnotation{
         //
         this.commonInfo.audioView.callbackAudioInfoLoaded = () => {
             console.log("[called] AudioInfoLoaded")
-            this.commonInfo.labelView.loadLabelDataServer(this.base_path + this.projectName + "/" + labelName + ".csv?")
+            this.commonInfo.labelView.loadLabelDataServer(this.base_path + this.projectName + "/" + this.labelName + ".csv?")
             $("#waveDisplayL").css('background-image', 'url("' + this.base_path + this.projectName + '/music.png")');
         }
         this.commonInfo.labelView.labelModifiededCallback = (i: number, old: number, label: number) => {
@@ -383,6 +410,9 @@ class AppAnnotation{
         $('#buttonSubFunction').click(function () {
             $('#subFunction').slideToggle('fast');
         });
+        //
+        $("#label_selector").draggable();
+        $("#label_selector").resizable();
         //
         this.balloonManager = new BaloonManager(this.commonInfo, $('#labels'), 100, $("#waveDisplayL").offset());
         console.log(this.balloonManager);
