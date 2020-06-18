@@ -42,7 +42,7 @@ http://localhost:4567/
 
 新規プロジェクトの作成
 ----------------
-required
+requirements
 =======
 
 ```
