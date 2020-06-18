@@ -1,5 +1,7 @@
 # 音の到来方向とその音にラベルを付けるためのWebアプリ（鳥の鳴き声を想定）
 
+デモ：http://small-island.work/anno_bird/
+
 requirements
 ----------------
 ```
