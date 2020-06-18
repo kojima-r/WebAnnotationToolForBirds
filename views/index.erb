@@ -23,7 +23,7 @@
 %>
 	<tr>
 	<td>
-<a href="/load.html?project=<%= project %>&label=label">
+<a href="load.html?project=<%= project %>&label=label">
 <%= project %>
 </a>
 	</td>
@@ -39,12 +39,13 @@ end
 
 <div id="dialog" title="config">
 </div>
-
+<!--
 <p>デフォルト<br>
 <form method="post" action="/edit" enctype="multipart/form-data">
 <input type="file" name="example1"></p>
 <p><input type="submit" value="送信する"></p>
 </form>
+-->
 <!-- ***************************** -->
 <script type="text/javascript">
 $(function(){
@@ -52,7 +53,7 @@ $(function(){
 @projects.each do |project|
 %>
 $("#button_<%= project %>").click(function(){
-	$.get("/<%= project %>/config", function(data){
+	$.get("/anno_bird/<%= project %>/config", function(data){
 		var arr = data.split(/\r\n|\r|\n/);
 		var str="";
 		for(var i=0;i<arr.length;i++){

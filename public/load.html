@@ -2,25 +2,25 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Web annotation tool</title>
-<script src="/util.js"></script>
-<script src="/common.js"></script>
-<script src="/label.js"></script>
-<script src="/audio.js"></script>
-<script src="/audio_play.js"></script>
-<script src="/graph.js"></script>
+<script src="util.js"></script>
+<script src="common.js"></script>
+<script src="label.js"></script>
+<script src="audio.js"></script>
+<script src="audio_play.js"></script>
+<script src="graph.js"></script>
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.0/themes/base/jquery-ui.css" />
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
-<script src="/jquery.gpfloat-1.0.min.js"></script>
-<script src="/jquery.balloon.js"></script>
-<script src="/app.js"></script>
-    <script src="/balloon_manager.js"></script>
+<script src="jquery.gpfloat-1.0.min.js"></script>
+<script src="jquery.balloon.js"></script>
+<script src="app.js"></script>
+<script src="balloon_manager.js"></script>
 <script>
     function selectLabel(x) {
         app.selectLabel(x);
     }
     var projectName;
-    var base_path = "/"; //<%% rails base_path %%>
+    var base_path = "/anno_bird/"; //<%% rails base_path %%>
     var projectID = null; //<%% rails project_id %%>
     var app;
     window.onload = function () {

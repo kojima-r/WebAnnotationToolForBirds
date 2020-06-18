@@ -81,7 +81,7 @@ var AudioView = (function () {
                 ///
                 _this.initBar();
                 ///
-                _this.decodeSound(_this.waveBuffer);
+                //_this.decodeSound(_this.waveBuffer);
             }
         };
         oReq.send(null);
@@ -144,7 +144,7 @@ var AudioView = (function () {
             ///
             _this.initBar();
             ///
-            _this.decodeSound(_this.waveBuffer);
+            //_this.decodeSound(_this.waveBuffer);
             //playSound(waveBuffer);
         };
         reader.readAsArrayBuffer(file);
@@ -227,6 +227,7 @@ var AudioView = (function () {
         }
     };
     AudioView.prototype.decodeSound = function (data) {
+        var _this = this;
         var onError = function () {
         };
         this.context.decodeAudioData(data, function (buffer) {
@@ -234,7 +235,9 @@ var AudioView = (function () {
             this.wavDuration = buffer.duration;
             console.log("[sampling rate]", this.sampleRate);
             console.log("[duration]", this.wavDuration);
+            _this.waveBuffer=buffer
             if (this.callbackAudioInfoLoaded != null) {
+            	console.log("callback");
                 this.callbackAudioInfoLoaded();
                 this.callbackAudioInfoLoaded = null;
             }
@@ -249,7 +252,9 @@ var AudioView = (function () {
     AudioView.prototype.playSound = function (data, updateInfo, stPercentage) {
         var _this = this;
         this.startPercentage = stPercentage;
+	console.log(data);
         this.context.decodeAudioData(data, function (buffer) {
+	    console.log(buffer);
             _this.commonInfo.sampleRate = buffer.sampleRate;
             _this.commonInfo.wavDuration = buffer.duration;
             _this.playSource = _this.playSoundBuffer(buffer);
@@ -326,6 +331,8 @@ var AudioView = (function () {
                 this.playSource.stop();
             }
             this.isPlaying = true;
+	    console.log(this)
+	    console.log(this.waveBuffer)
             this.playSound(this.waveBuffer, this.updateInfo, this.percentage);
         }
     };
