@@ -15,7 +15,7 @@ filename= sys.argv[1]#"int_furu_0505_140_init1min.wav"
 #evt_map_filename= None
 evt_map_filename= sys.argv[2]
 if not os.path.exists(evt_map_filename):
-    print >>sys.stderr,"[WARN] event file does not exist:",evt_map_filename
+    print("[WARN] event file does not exist:",evt_map_filename, file=sys.stderr)
     evt_map_filename=None
 frm_map_filename= None
 output_postfix= sys.argv[3]
@@ -35,7 +35,7 @@ def read_cluster_event(filename):
 		if len(arr)>1:
 			res[int(arr[0])]=int(arr[1])
 			cls[int(arr[1])]=1
-	n_cls=len(cls.items())
+	n_cls=len(list(cls.items()))
 	return res,n_cls
 
 def read_cluster_frame(filename):
@@ -44,16 +44,16 @@ def read_cluster_frame(filename):
 	for line in open(filename,"r"):
 		arr=line.strip().split(":")
 		if len(arr)>1:
-			vec=map(int,arr[1].split(","))
+			vec=list(map(int,arr[1].split(",")))
 			res[int(arr[0])]=vec
 			for cls_i in vec:
 				cls[cls_i]=1
-			n_cls=len(cls.items())
+			n_cls=len(list(cls.items()))
 	return res,n_cls
 
 def extend_frame(fvec,frame_len):
 	org_len=len(fvec)
-	print org_len,"->",frame_len
+	print(org_len,"->",frame_len)
 	if org_len<frame_len:
 		x=frame_len/org_len
 		l=[[el]*x for el in fvec]
@@ -64,7 +64,7 @@ def extend_frame(fvec,frame_len):
 		s=org_len*1.0/frame_len
 		step=0
 		l=[]
-		for i in xrange(frame_len):
+		for i in range(frame_len):
 			index=int(step)
 			l.append(fvec[index])
 			step+=s
@@ -139,7 +139,8 @@ ax[0].set_xlim([0, length])
 infilename= "separated.txt"
 
 data = list(np.loadtxt(infilename))
-data.sort(cmp=lambda x,y: cmp(x[1], y[1]))
+#data.sort(cmp=lambda x,y: cmp(x[1], y[1]))
+#data.sort(cmp=lambda x,y: cmp(x[1], y[1]))
 
 #data= np.array(data).transpose()
 
@@ -188,12 +189,12 @@ for l in line2:
 	if cls_vec!=None:
 		line3.append([seg_id,cls_vec,l2[1]*frame_sec, (l2[2])*360.0/(2.0*np.pi)])
 		cv=cm.gist_rainbow(color_vec)
-		axs.scatter(l2[1]*frame_sec, (l2[2])*360.0/(2.0*np.pi),marker=u'+',s=10,color=cv,alpha=.5)
+		axs.scatter(l2[1]*frame_sec, (l2[2])*360.0/(2.0*np.pi),marker='+',s=10,color=cv,alpha=.5)
 		#axs.plot(l2[1]*frame_sec, (l2[2])*360.0/(2.0*np.pi))
 	else:
-                cls_vec=[0]*len(l2[1])
+		cls_vec=[0]*len(l2[1])
 		line3.append([seg_id,cls_vec,l2[1]*frame_sec, (l2[2])*360.0/(2.0*np.pi)])
-		axs.scatter(l2[1]*frame_sec, (l2[2])*360.0/(2.0*np.pi),marker=u'+',s=10,alpha=.5)
+		axs.scatter(l2[1]*frame_sec, (l2[2])*360.0/(2.0*np.pi),marker='+',s=10,alpha=.5)
 	
 	if t%2==0:
 		axs.text(l2[1][0]*frame_sec, (l2[2][0])*360.0/(2.0*np.pi), seg_id, picker=True)
@@ -217,5 +218,5 @@ for l3 in line3:
 	x_vec=l3[2]
 	theta=(180-l3[3])/360.0
 	for c,v,t in zip(cls_vec,x_vec,theta):
-		print ",".join(map(str,[seg_id,c,v,t,seg_id]))
+		print(",".join(map(str,[seg_id,c,v,t,seg_id])))
 

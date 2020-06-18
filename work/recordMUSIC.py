@@ -14,7 +14,7 @@ class RecordMUSIC(harkbasenode.HarkBaseNode):
 	if(self.count % 50 == 0):
 	        spectrum = numpy.array(self.SPECTRUM)	
 		#print spectrum
-		print len(spectrum)
+		print(len(spectrum))
 		for d in range(len(spectrum)/1):
 			self.f.write(str(spectrum[d*1]) + "\t")
 		self.f.write("\n")

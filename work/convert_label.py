@@ -25,7 +25,7 @@ def read_cluster_event(filename):
 		if len(arr)>1:
 			res[int(arr[0])]=int(arr[1])
 			cls[int(arr[1])]=1
-	n_cls=len(cls.items())
+	n_cls=len(list(cls.items()))
 	return res,n_cls
 
 def read_cluster_frame(filename):
@@ -34,16 +34,16 @@ def read_cluster_frame(filename):
 	for line in open(filename,"r"):
 		arr=line.strip().split(":")
 		if len(arr)>1:
-			vec=map(int,arr[1].split(","))
+			vec=list(map(int,arr[1].split(",")))
 			res[int(arr[0])]=vec
 			for cls_i in vec:
 				cls[cls_i]=1
-			n_cls=len(cls.items())
+			n_cls=len(list(cls.items()))
 	return res,n_cls
 
 def extend_frame(fvec,frame_len):
 	org_len=len(fvec)
-	print org_len,"->",frame_len
+	print(org_len,"->",frame_len)
 	if org_len<frame_len:
 		x=frame_len/org_len
 		l=[[el]*x for el in fvec]
@@ -54,7 +54,7 @@ def extend_frame(fvec,frame_len):
 		s=org_len*1.0/frame_len
 		step=0
 		l=[]
-		for i in xrange(frame_len):
+		for i in range(frame_len):
 			index=int(step)
 			l.append(fvec[index])
 			step+=s
@@ -128,5 +128,5 @@ for l3 in line3:
 	x_vec=l3[2]
 	theta=(180-l3[3])/360.0
 	for c,v,t in zip(cls_vec,x_vec,theta):
-		print ",".join(map(str,[seg_id,c,v,t]))
+		print(",".join(map(str,[seg_id,c,v,t])))
 

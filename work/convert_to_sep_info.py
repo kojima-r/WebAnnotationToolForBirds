@@ -28,9 +28,9 @@ for line in open(filename):
 import numpy
 #
 for k,v in sorted(info.items()):
-	data=[ map(float,vec) for vec in v["data"]]
+	data=[ list(map(float,vec)) for vec in v["data"]]
 	da=numpy.array(data)
 	a= numpy.mean(da,axis=0)
-	print str(k)+":"+str(v["min_t"])+"-"+str(v["max_t"])+":"+",".join(map(str,a))
+	print(str(k)+":"+str(v["min_t"])+"-"+str(v["max_t"])+":"+",".join(map(str,a)))
 
 

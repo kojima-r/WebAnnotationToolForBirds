@@ -1,12 +1,13 @@
 base=$(cd $(dirname $0); pwd)
 
 org_work=$base/work
-work=$base/localized_150521_aaai_work
+work=$base/testtest
 main=$base
-project=localized_150521
+project=testtest
 #target=audio/rec05052013_14_1min.wav
-target="audio/localized_150521.wav"
+target="audio/test_rectf00.wav"
 
+# optional
 #textgrid=rd150503_35_090530_wav_species_corrected_merged_cleaned.TextGrid
 textgrid=localized_150521_6_073407-01_150-800_wav_t295_l2200_moved_all_five.TextGrid
 

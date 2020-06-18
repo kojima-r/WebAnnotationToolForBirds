@@ -42,29 +42,29 @@ lines = i_file.readlines()
 for line in lines:
 	if line.find('Parameter name="NUM_SOURCE"') >= 0:
 		line = line.replace("pmt1", p1)
-		print line
+		print(line)
 	elif line.find('Parameter name="THRESH"') >= 0:
 		line = line.replace('pmt2', p2)
-		print line
+		print(line)
 	elif line.find('Parameter name="LOWER_BOUND_FREQUENCY"') >= 0:
 		line = line.replace('pmt3', p3)
 		line = line.replace('pmt6', p6)
-		print line
+		print(line)
 	elif line.find('Parameter name="PAUSE_LENGTH"')>=0:
 		line = line.replace('pmt4', p4)
-		print line
+		print(line)
 	elif line.find('Parameter name="MIN_SRC_INTERVAL"')>=0:
 		line = line.replace('pmt5', p5)
-		print line
+		print(line)
 	elif line.find('Parameter name="A_MATRIX"')>=0:
 		line = line.replace('pmt7', p7)
-		print line
+		print(line)
 	elif line.find('Parameter name="TF_CONJ_FILENAME"')>=0:
 		line = line.replace('pmt7', p7)
-		print line
+		print(line)
 	elif line.find('Parameter name="TF_CHANNEL_SELECTION"')>=0:
 		line = line.replace('pmt8', p8)
-		print line
+		print(line)
 
 	o_file.write(line)
 o_file.close()

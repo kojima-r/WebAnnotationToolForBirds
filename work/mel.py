@@ -90,10 +90,10 @@ def my_specgram(x, NFFT=256, Fs=2, Fc=0, detrend=mlab.detrend_none,
 ###
 #dynamic range
 	if p_range_max!=None:
-		print "[range]",np.max(Z),"->",p_range_max
+		print("[range]",np.max(Z),"->",p_range_max)
 		Z[Z>p_range_max]=p_range_max
 	if p_range_min!=None:
-		print "[range]",np.min(Z),"->",p_range_min
+		print("[range]",np.min(Z),"->",p_range_min)
 		Z[Z<p_range_min]=p_range_min
 	if normalize_enabled:
 		if p_range_min!=None and p_range_max!=None:
@@ -113,12 +113,12 @@ def cut_off(Zt,thresh,length):
 	num=Zt.shape[0]
 	start_index=None
 	end_index=None
-	for i in xrange(num):
+	for i in range(num):
 		if np.max(Zt[i])>thresh:
 			start_index=i
 			break
 	if(start_index!=None and start_index<num):
-		for i in xrange(num):
+		for i in range(num):
 			if np.max(Zt[num-i-1])>thresh:
 				end_index=num-i-1
 				break
@@ -169,7 +169,7 @@ if __name__ == "__main__":
 
 	x=(12*(view_length/10))
 	if(x> 32768/73.0):#plot maximum size is 32768
-		print "[WARN] plot maximum size"
+		print("[WARN] plot maximum size")
 		x=32768/73.0#+6 actually safe
 	figure(figsize=(x,4))
 	pxx, freqs, bins, im,Z = my_specgram(data,
@@ -186,7 +186,7 @@ if __name__ == "__main__":
 	try:
 		tight_layout()
 	except:
-		print "[WARN] tight_layout doesn't work, and skip"
+		print("[WARN] tight_layout doesn't work, and skip")
 
 	#xlabel("time [second]"):
 	#ylabel("frequency [Hz]")
@@ -194,13 +194,13 @@ if __name__ == "__main__":
 	try:
 		savefig(output_path+name+'.png', dpi=72)
 	except:
-		print "[WARN] too short (plot fail)"
+		print("[WARN] too short (plot fail)")
 	
 	nbin=Z.shape[0]
 	i1=int(math.floor(nbin*output_freq_start/(Fs/2)))
 	i2=int(math.ceil(nbin*output_freq_end/(Fs/2))+1)
 	Z=Z[i1:i2]
-	print Z.shape
+	print(Z.shape)
 
 	save_data=np.transpose(Z)
 	res=True
@@ -208,9 +208,9 @@ if __name__ == "__main__":
 		res,save_data=cut_off(save_data,0.1,200)
 	if res:
 		np.save(output_path+name,save_data)
-		print "[save]:"+output_path+name+".npy"
+		print("[save]:"+output_path+name+".npy")
 		out = open(output_path+name+".mel","w")
 		for x in save_data:
-			print >>out, ",".join(map(str,x))
-		print "[save]:"+output_path+name+".mel"
+			print(",".join(map(str,x)), file=out)
+		print("[save]:"+output_path+name+".mel")
 #

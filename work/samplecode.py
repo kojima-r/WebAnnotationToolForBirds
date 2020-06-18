@@ -7,9 +7,9 @@ class HarkNode(harkbasenode.HarkBaseNode):
         self.sourceDict={}
     def calculate(self):
         d=self.TRACKING
-        print "#",
+        print("#", end=' ')
         arr=[str(el['id'])+","+(",".join(map(str,el['x'])))+","+str(el['power']) for el in d]
-        print "|".join(arr)
+        print("|".join(arr))
         self.outputValues["output"] =0# self.tracking
        # set output value
        # from two inputs: input1 and input2.

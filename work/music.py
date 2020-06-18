@@ -11,29 +11,30 @@ from HARK_TF_Parser.sorting_mat import  permutation_hark_tf
 
 tf_filename=sys.argv[1]
 
-permutation=permutation_hark_tf(tf_filename).values()
+permutation=list(permutation_hark_tf(tf_filename).values())
 permutation.reverse()
 
 
 mat_list=[]
 for line in open("music.txt"):
 	arr=line.strip().split("\t")
-	mat_list.append(map(float,arr))
+	mat_list.append(list(map(float,arr)))
 
 data = np.array(mat_list)
 data=data[:,permutation]
 #print data
-print "# MUSIC spectrogram:",data.shape
+print("# MUSIC spectrogram:",data.shape)
 #col=data.shape[1]
 ###data=np.c_[data[:,col/2:],data[:,:col/2]]
 #data=data[:,::-1]
 
 ax = sns.heatmap(data.transpose(),cbar=False,cmap=cm.Greys)
-sns.plt.axis("off")
+plt.axis("off")
+#sns.plt.axis("off")
 #sns.despine()
 sns.despine(fig=None, ax=None, top=False, right=False, left=False, bottom=False, offset=None, trim=False)
 plt.tight_layout()
 ax.tick_params(labelbottom='off')
 ax.tick_params(labelleft='off')
-sns.plt.savefig("music.png", bbox_inches="tight", pad_inches=0.0)
+plt.savefig("music.png", bbox_inches="tight", pad_inches=0.0)
 

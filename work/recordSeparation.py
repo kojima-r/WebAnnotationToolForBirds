@@ -32,7 +32,7 @@ class RecordSeparation(harkbasenode.HarkBaseNode):
 			cid= -1
 		if(cid > self.currentID):
 			self.currentID= cid
-			print (self.currentID)
+			print((self.currentID))
 			#self.f.write(str(self.currentID))
 		#self.f.write("\n")
 	self.outputValues["output"] = 1
