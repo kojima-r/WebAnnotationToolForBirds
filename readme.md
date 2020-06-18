@@ -2,15 +2,15 @@
 
 requirements
 ----------------
+```
+apt-get install ruby
+apt-get install gem
+```
 
 ```
 gem install sinatra
 gem install haml
 gem install wav-file
-```
-```
-apt-get install ruby
-apt-get install gem
 ```
 
 アノテーションサーバの起動
