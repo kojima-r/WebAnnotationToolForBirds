@@ -1,4 +1,25 @@
 
+requirements
+----------------
+
+```
+gem install sinatra
+gem install haml
+gem install wav-file
+```
+
+サーバの起動
+----------------
+
+```
+sh server_up.sh
+```
+
+起動後は、例えばブラウザから以下のようなアドレスにアクセス
+```
+http://localhost:4567/
+```
+
 ラベルファイル形式
 ----------------
 １行あたり１ラベル（１区間）のコンマ区切りcsv
