@@ -7,8 +7,12 @@ gem install sinatra
 gem install haml
 gem install wav-file
 ```
+```
+apt-get install ruby
+apt-get install gem
+```
 
-サーバの起動
+アノテーションサーバの起動
 ----------------
 
 ```
@@ -33,3 +37,35 @@ http://localhost:4567/
 - y座標は0-1で正規化
 
 
+新規プロジェクトの作成
+----------------
+required
+=======
+
+```
+sox
+soxi
+hark
+python3
+```
+
+実行ステップ
+=======
+1. audio/に元ファイルを入れる
+2. config.shを書きかえる
+3. `./create_project.sh`を実行
+3. `./init_hark.sh`を実行
+
+プロジェクトごとに最低限書き換える必要のある項目は以下
+- プロジェクトの作業ディレクトリ名
+```
+work=$base/testtest
+```
+- プロジェクト名
+```
+project=testtest
+```
+- 対象の音ファイル
+```
+target="audio/test_rectf00.wav"
+```
