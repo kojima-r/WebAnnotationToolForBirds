@@ -11,12 +11,14 @@
 cp -r ${org_work} ${work}
 ln -s ${main}/tf/${hark_tf} ${work}/${hark_tf}
 #cp ${target} ${work}/original.wav
-sox ${target} -r 16000 ${work}/original.wav
-mkdir ./public/${project}
-sox ${target} -r 16000 -c 1 ./public/${project}/original.wav
+sox ${target} -r 16000 -b 16 -e signed-integer ${work}/original.wav
+
+mkdir -p ./public/${project}
+sox ${target} -r 16000 -c 1 -b 16 -e signed-integer ./public/${project}/original.wav
+
 sh get_audio_info.sh ./public/${project}/original.wav >./public/${project}/original.json
 cp config.sh ./public/${project}/config
-mkdir public/${project}/sep_files                                    
+mkdir -p ./public/${project}/sep_files                                    
 
 
 cd ${main}

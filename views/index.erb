@@ -1,17 +1,85 @@
 <html>
     <head>
         <title><%= @title %></title>
+
+<link type="text/css" rel="stylesheet"
+  href="http://code.jquery.com/ui/1.10.3/themes/cupertino/jquery-ui.min.css" />
+<script type="text/javascript"
+  src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script type="text/javascript"
+  src="http://code.jquery.com/ui/1.10.3/jquery-ui.min.js"></script>
     </head>
     <body>
         <h1><%= @title %></h1>
         <p><%= @subtitle %></p>
-<form method="post" action="/edit" enctype="multipart/form-data">
+
+<table border="1">
+<tr>
+	<th>Projects</th>
+	<th>Status</th>
+</tr>
+<%
+@projects.each do |project|
+%>
+	<tr>
+	<td>
+<a href="/load.html?project=<%= project %>&label=label">
+<%= project %>
+</a>
+	</td>
+	<td>
+<button id="button_<%= project %>">config</button>
+	</td>
+	</tr>
+<%
+end
+%>
+</table>
+
+
+<div id="dialog" title="config">
+</div>
 
 <p>デフォルト<br>
+<form method="post" action="/edit" enctype="multipart/form-data">
 <input type="file" name="example1"></p>
-
 <p><input type="submit" value="送信する"></p>
 </form>
+<!-- ***************************** -->
+<script type="text/javascript">
+$(function(){
+<%
+@projects.each do |project|
+%>
+$("#button_<%= project %>").click(function(){
+	$.get("/<%= project %>/config", function(data){
+		var arr = data.split(/\r\n|\r|\n/);
+		var str="";
+		for(var i=0;i<arr.length;i++){
+			if(! arr[i]==""){
+				if(! arr[i].match(/^#/)){
+				if(arr[i].match(/^hark/)){
+				str+=arr[i]+"<br>\r\n"
+				}
+				}
+			}
+		}
+		console.log("Data Loaded: " + str);
+		$("#dialog").attr("title","<%= project %>");
+		$("#dialog").html(str);
+		$("#dialog").dialog({autoOpen: false,width:500,height:300,position:"center top",modal: true});
+		$('#dialog').dialog('open');
+	});
+});
+<%
+end
+%>
+$( document ).on( "click", ".ui-widget-overlay", function(){
+		    $(this).next().find(".ui-dialog-content").dialog("close");
+			} );
+
+		});
+</script>
 
     </body>
 </html>

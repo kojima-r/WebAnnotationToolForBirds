@@ -6,7 +6,7 @@
 
 # run HARK
 echo "... run HARK"
-python setparam.py ${work} ${hark_src_num} ${hark_thresh} ${hark_lowest_freq} ${hark_pause} ${hark_min_interval_src} ${hark_lowest_freq_ghdss} ${hark_tf} 
+python setparam.py ${hark_tmpl} ${work} ${hark_src_num} ${hark_thresh} ${hark_lowest_freq} ${hark_pause} ${hark_min_interval_src} ${hark_lowest_freq_ghdss} ${hark_tf} "${hark_ch}"
 cd ${work}
 sh ./run.sh
 
@@ -25,4 +25,5 @@ echo "cp ${work}/sep_files/*.wav  ./public/${project}/sep_files/"
 rm ./public/${project}/sep_files/*
 cp ${work}/sep_files/*.wav  ./public/${project}/sep_files/
 cp ${work}/sep_files/*.png  ./public/${project}/sep_files/
+cp config.sh ./public/${project}/config
 

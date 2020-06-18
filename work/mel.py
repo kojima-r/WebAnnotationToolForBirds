@@ -197,7 +197,9 @@ if __name__ == "__main__":
 		print "[WARN] too short (plot fail)"
 	
 	nbin=Z.shape[0]
-	Z=Z[math.floor(nbin*output_freq_start/(Fs/2)):math.ceil(nbin*output_freq_end/(Fs/2))+1]
+	i1=int(math.floor(nbin*output_freq_start/(Fs/2)))
+	i2=int(math.ceil(nbin*output_freq_end/(Fs/2))+1)
+	Z=Z[i1:i2]
 	print Z.shape
 
 	save_data=np.transpose(Z)

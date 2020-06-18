@@ -4,13 +4,14 @@
 
 . ./config.sh
 
-#: <<'#__CO__'
+: <<'#__CO__'
 # run HARK
 echo "... run HARK"
 python setparam.py ${work} ${hark_src_num} ${hark_thresh} ${hark_lowest_freq} ${hark_pause} ${hark_min_interval_src} ${hark_lowest_freq_ghdss} ${hark_tf} 
 cd ${work}
 sh ./run.sh
 
+#__CO__
 
 # run clustering for initial labels
 echo "... initialize classification"
@@ -43,7 +44,6 @@ cd ${main}
 ruby ./reduce_label.rb ${work}/label_mel10.csv 10 > ${main}/public/${project}/label.csv
 
 cp config.sh ./public/${project}/config
-#__CO__
 
 cp ${work}/sep_files/*.wav  ./public/${project}/sep_files  
 cp ${work}/sep_files/*.png  ./public/${project}/sep_files  

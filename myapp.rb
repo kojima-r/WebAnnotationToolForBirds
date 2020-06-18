@@ -62,8 +62,9 @@ end
 
 # アップロード
 get '/' do
-	
-	haml :index
+	@projects=Dir.glob("./public/**").select{|e| File.ftype(e)=="directory"}.map{|e| e.gsub("./public/","")}
+	p @projects
+	erb :index
 end
  # アップロード処理
 post '/upload_txt' do

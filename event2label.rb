@@ -1,39 +1,60 @@
-def convert_evt2label(org_label_file,evt_file,eval_mode)
+require 'optparse'
+
+flag_event_is_obs=false
+flag_remove_nonevent=false
+
+opt = OptionParser.new
+
+opt.on('-o') {|v| flag_event_is_obs = v }
+opt.on('-r') {|v| flag_remove_nonevent = v }
+
+
+def convert_evt2label(org_label_file,evt_file,flag_event_is_obs,flag_rm_nonevent)
 	mapping={}
+	# reading event file => mapping: event_id -> class
 	open(evt_file).each{|line|
 		arr=line.strip.split(" ")
 		mapping[arr[0]]=arr[1]
 	}
 
-			$stderr.puts mapping.to_s
+	$stderr.puts mapping.to_s
+	# reading label file
 	open(org_label_file).each{|line|
 		arr=line.strip.split(",")
+		# k = event_id
 		k=nil
-		if arr.length==4
+		# which label formats?
+		if arr.length==4 # no seg_id(=arr[4])
 			k=arr[0]
 			arr.push(arr[0])
-			if eval_mode
-				arr.push(1)
-			else
-				arr.push(0)
-			end
-		else
+			arr.push(0)
+		elsif arr.length>4 # no seg_id(=arr[4])
 			k=arr[4]
+		elsif arr.length==0
+			next
+		else
+			$stderr.puts "[ERROR] Label format error"
+			return
 		end
+		# output
 		if mapping.key? k
 			arr[1]=mapping[k]
-			arr[5]=0
+			if flag_event_is_obs
+				arr[5]=1
+			end
+			puts arr.join(",")
 		else
-			#$stderr.puts "[INFO] "+k.to_s+" does not exist"
+			if not flag_rm_nonevent
+				puts arr.join(",")
+			else
+				#$stderr.puts "[INFO] "+k.to_s+" does not exist"
+			end
 		end
-		puts arr.join(",")
 	}
 end
-eval_mode=false
-if ARGV.length>=3 and ARGV[2]=="eval"
-	eval_mode=true
-end
-convert_evt2label(ARGV[0],ARGV[1],eval_mode)
+
+opt.parse!(ARGV)
+convert_evt2label(ARGV[0],ARGV[1],flag_event_is_obs,flag_remove_nonevent)
 
 
 
